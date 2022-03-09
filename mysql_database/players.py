@@ -73,7 +73,11 @@ class Players:
     
     def create_index(self):
         conn, crsr = self.init()
-        # TODO
+
+        crsr.execute("CREATE INDEX public_address_hash_index ON players (public_address);")
+        
+        conn.commit()
+        conn.close()
     
     def update(self, to_update_info: dict):
         conn, crsr = self.init()
@@ -95,10 +99,18 @@ class Players:
         conn.commit()
         conn.close()
 
+# TODO
+"""
+- Add max_rounds to table
+- user_name instead of full_name
+
+- Edit retrieve players (add round=None parameter)
+"""
 if __name__ == "__main__":
     players_instance = Players('db.ini')
     players_instance.delete_table()
     players_instance.create_table()
+    players_instance.create_index()
     
     players_instance.add_player(["address_1", "first last"])
     players_instance.update({"round_num": 3, "public_address": "address_1", "full_name": "second last", "is_rail": True})
