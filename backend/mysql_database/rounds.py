@@ -59,7 +59,7 @@ class Rounds:
         """
         
         # add tournament_id 
-        tournament_id = get_current_tournament_id()
+        tournament_id = self.tournaments.get_current_tournament_id()
         
         round_info += [tournament_id] # TODO: add tournament_id
         

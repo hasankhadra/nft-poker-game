@@ -48,7 +48,7 @@ def on_join(data):
     if not messages.get(room):
         messages[room] = []
     join_room(room)
-    send(name + ' has entered the room.', to=room)
+    send(user + ' has entered the room.', to=room)
 
 @socketio.on('leave')
 def on_leave(data):
