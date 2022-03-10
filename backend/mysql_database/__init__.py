@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS games (
 create_table_players = """
 CREATE TABLE IF NOT EXISTS players (
     id INT AUTO_INCREMENT PRIMARY KEY, 
-    nft_id INT NOT NULL,
+    nft_id VARCHAR(255) NOT NULL,
     public_address varchar(255) NOT NULL,
     username VARCHAR(255) NOT NULL, 
     round_id INT NOT NULL,

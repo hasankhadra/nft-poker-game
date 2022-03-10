@@ -19,6 +19,8 @@ class Rounds:
         crsr.execute("show tables;")
         tables = crsr.fetchall()
         tables = [item[0] for item in tables]
+        
+        conn.close()
         return 'rounds' in tables  
     
     def delete_table(self):
@@ -46,8 +48,7 @@ class Rounds:
                 tournament_id INT NOT NULL,
                 round_num INT NOT NULL,
                 start_time DATE NOT NULL,
-                end_time DATE NOT NULL,
-                FOREIGN KEY (tournament_id) REFERENCES tournaments(id));
+                end_time DATE NOT NULL);
             """)
         conn.commit()
         conn.close()
@@ -74,6 +75,17 @@ class Rounds:
 
         return new_id
     
+    def get_rounds_by_tournament_id(self, round_info: list):
+        """
+        :param round_info: list containing [tournament_id]
+        :return: tuple of tuples containing all the rounds inside a specific tournament
+        """
+        conn, crsr = self.init()
+        res = crsr.execute("SELECT * from rounds WHERE tournament_id = %s", round_info)
+        
+        conn.close()
+        return res
+    
     def get_next_round_id(self, round_info: list):
         """
         :param round_info: list 
@@ -82,19 +94,23 @@ class Rounds:
         conn, crsr = self.init()
         
         crsr.execute("SELECT id from rounds WHERE tournament_id = %s AND round_num = %s", round_info)
-        id = crsr.fetchall()[0]
+        try:
+            id = crsr.fetchall()[0][0]
+            conn.close()
+
+            return id
+        except Exception as e:
+            print(e)
+        return None
         
-        return id
-        
-    def get_rounds(self, limit: int, winners=None):
+    def get_rounds(self, limit: int):
         conn, crsr = self.init()
         query = "SELECT * FROM rounds"
         
-        if winners:
-            query += " WHERE is_rail == TRUE"
-        
         query += " limit %s"
         crsr.execute(query, [limit])
+        
+        conn.close()
         return crsr.fetchall()
     
     def update(self, to_update_info: dict):
