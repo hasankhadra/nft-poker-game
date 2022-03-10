@@ -50,8 +50,7 @@ class Players:
                 username VARCHAR(255) NOT NULL, 
                 round_id INT NOT NULL,
                 is_rail BOOLEAN NOT NULL,
-                bounty double NOT NULL,
-                FOREIGN KEY (round_id) REFERENCES rounds(id));
+                bounty double NOT NULL);
             """)
         conn.commit()
         conn.close()
@@ -62,11 +61,11 @@ class Players:
         :return: id of the inserted player
         """
         
-        # add round_id, is_rail, bounty info
-        # tournament_id = get_current_tournament_id()
-        round_id = 1 #, get_current_round_id(tournament_id)
+        # TODO
+        tournament_id = self.tournaments.get_current_tournament_id()
+        round_id = self.rounds.get_next_round_id([tournament_id, 1])
         
-        player_info += [round_id, False, 0.0] # TODO: add tournament_id
+        player_info += [round_id, False, 0.0]
         
         conn, crsr = self.init()
         crsr.execute("""INSERT INTO players (nft_id, public_address, username, round_id, is_rail, bounty) 
@@ -79,12 +78,12 @@ class Players:
 
         return new_id
     
-    def get_players(self, limit: int, winners=None):
+    def get_players(self, limit : int =10, winners=None):
         conn, crsr = self.init()
         query = "SELECT * FROM players"
         
         if winners:
-            query += " WHERE is_rail == TRUE"
+            query += f" WHERE is_rail = false"
         
         query += " limit %s"
         crsr.execute(query, [limit])
@@ -117,12 +116,15 @@ class Players:
 
 if __name__ == "__main__":
     players_instance = Players()
-    players_instance.delete_table()
-    # players_instance.create_table()
+    # players_instance.delete_table()
+    players_instance.create_table()
     # players_instance.create_index()
     
-    # players_instance.add_player(["address_1", "first last"])
-    # players_instance.update({"round_num": 3, "public_address": "address_1", "full_name": "fdsds last", "is_rail": True})
+    # players_instance.add_player([2, "address_3", "stalker"])
+    
+    players_instance.update({"round_id": 3, "public_address": "address_1", "username": "fdsds last", "is_rail": True, "id": 1})
+    players_instance.update({"round_id": 3, "public_address": "address_1", "username": "fdsds last", "is_rail": True, "id": 2})
+    print(players_instance.get_players(winners=True))
 
 """
 "CREATE INDEX public_address_hash_index ON players (public_address);"

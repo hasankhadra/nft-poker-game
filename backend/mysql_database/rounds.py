@@ -1,5 +1,6 @@
 from connect import Connect
-# from tournaments import Tournaments
+from datetime import datetime
+from tournaments import Tournaments
 
 class Rounds:
     
@@ -7,7 +8,7 @@ class Rounds:
         self.db = 'nft_poker_game'
         self.config_file = 'db.ini'
         self.connect = Connect(self.config_file)
-        # self.tournaments = Tournaments()
+        self.tournaments = Tournaments()
         
         
     def init(self):
@@ -53,18 +54,18 @@ class Rounds:
      
     def add_round(self, round_info: list):
         """
-        :param player_info: list containing [nft_id, public_address, username]
-        :return: id of the inserted player
+        :param round_info: list containing [round_num, start_time, end_time]
+        :return: id of the inserted round
         """
         
-        # add round_id, is_rail, bounty info
+        # add tournament_id 
         tournament_id = get_current_tournament_id()
         
-        player_info += [round_id, False, 0.0] # TODO: add tournament_id
+        round_info += [tournament_id] # TODO: add tournament_id
         
         conn, crsr = self.init()
-        crsr.execute("""INSERT INTO players (tournament_id, round_num, start_time, end_time) 
-                     VALUES (%s, %s, %s, %s, %s, %s)""", player_info)
+        crsr.execute("""INSERT INTO rounds (round_num, start_time, end_time, tournament_id) 
+                     VALUES (%s, %s, %s, %s)""", round_info)
         
         new_id = crsr.lastrowid
         
@@ -73,9 +74,21 @@ class Rounds:
 
         return new_id
     
-    def get_players(self, limit: int, winners=None):
+    def get_next_round_id(self, round_info: list):
+        """
+        :param round_info: list 
+        containing [tournament_id, round_num]
+        """
         conn, crsr = self.init()
-        query = "SELECT * FROM players"
+        
+        crsr.execute("SELECT id from rounds WHERE tournament_id = %s AND round_num = %s", round_info)
+        id = crsr.fetchall()[0]
+        
+        return id
+        
+    def get_rounds(self, limit: int, winners=None):
+        conn, crsr = self.init()
+        query = "SELECT * FROM rounds"
         
         if winners:
             query += " WHERE is_rail == TRUE"
@@ -88,7 +101,7 @@ class Rounds:
         """
         to_update_info: dict 
         contains all columns to be updated in the format {column_name: new_value, ...}
-        NOTE: The dict should contain the key-value pair {id: value} of the player
+        NOTE: The dict should contain the key-value pair {id: value} of the round
         """
         conn, crsr = self.init()
         
@@ -104,20 +117,20 @@ class Rounds:
         update_fields_expression = update_fields_expression[:-2]
         
         values.append(id)
-        crsr.execute(f"UPDATE players SET {update_fields_expression} WHERE id = %s", values)
+        crsr.execute(f"UPDATE rounds SET {update_fields_expression} WHERE id = %s", values)
         
         conn.commit()
         conn.close()
 
 if __name__ == "__main__":
-    players_instance = Players()
-    players_instance.delete_table()
-    # players_instance.create_table()
-    # players_instance.create_index()
+    rounds_instance = Rounds()
+    rounds_instance.delete_table()
+    # rounds_instance.create_table()
+    # rounds_instance.create_index()
     
-    # players_instance.add_player(["address_1", "first last"])
-    # players_instance.update({"round_num": 3, "public_address": "address_1", "full_name": "fdsds last", "is_rail": True})
+    # rounds_instance.add_round(["address_1", "first last"])
+    # rounds_instance.update({"round_num": 3, "public_address": "address_1", "full_name": "fdsds last", "is_rail": True})
 
 """
-"CREATE INDEX public_address_hash_index ON players (public_address);"
+"CREATE INDEX public_address_hash_index ON rounds (public_address);"
 """
