@@ -1,6 +1,3 @@
-from operator import is_
-import re
-from tkinter import N
 from connect import Connect
 
 class Games:

@@ -1,5 +1,3 @@
-from operator import is_
-import re
 from connect import Connect
 
 class Tournaments:
