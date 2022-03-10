@@ -17,18 +17,6 @@ CREATE TABLE IF NOT EXISTS rounds (
     FOREIGN KEY (tournament_id) REFERENCES tournaments(id));
 """
 
-create_table_players = """
-CREATE TABLE IF NOT EXISTS players (
-    id INT AUTO_INCREMENT PRIMARY KEY, 
-    nft_id INT NOT NULL,
-    public_address varchar(255) NOT NULL,
-    username VARCHAR(255) NOT NULL, 
-    round_id INT NOT NULL,
-    is_rail BOOLEAN NOT NULL,
-    bounty double NOT NULL,
-    FOREIGN KEY (round_id) REFERENCES rounds(id));
-"""
-
 create_table_games = """
 CREATE TABLE IF NOT EXISTS games (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -41,6 +29,18 @@ CREATE TABLE IF NOT EXISTS games (
     FOREIGN KEY (player2_id) REFERENCES players(id),
     FOREIGN KEY (winner_id) REFERENCES players(id)
     );
+"""
+
+create_table_players = """
+CREATE TABLE IF NOT EXISTS players (
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+    nft_id VARCHAR(255) NOT NULL,
+    public_address varchar(255) NOT NULL,
+    username VARCHAR(255) NOT NULL, 
+    round_id INT NOT NULL,
+    is_rail BOOLEAN NOT NULL,
+    bounty double NOT NULL,
+    FOREIGN KEY (round_id) REFERENCES rounds(id));
 """
 
 connection = Connect('db.ini')
