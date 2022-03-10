@@ -10,7 +10,6 @@ class Rounds:
         self.connect = Connect(self.config_file)
         self.tournaments = Tournaments()
         
-        
     def init(self):
         return self.connect.init(self.db)
         
