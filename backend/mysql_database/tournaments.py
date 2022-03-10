@@ -15,10 +15,12 @@ class Tournaments:
         return self.connect.init(self.db)
         
     def is_tournaments_exist(self):
-        _, crsr = self.init()
+        conn, crsr = self.init()
         crsr.execute("show tables;")
         tables = crsr.fetchall()
         tables = [item[0] for item in tables]
+        conn.commit()
+        conn.close()
         return 'tournaments' in tables  
     
     def delete_table(self):
@@ -54,6 +56,12 @@ class Tournaments:
         :param tournament_info: list containing [num_rounds]
         """
         
+        try:
+            assert len(tournament_info) == 1 and isinstance(tournament_info[0], int) \
+                   and tournament_info[0] > 0
+        except:
+            return
+
         # Setting the is_over in the tables to False.
         tournament_info.append(False)
 
@@ -65,14 +73,17 @@ class Tournaments:
         conn.close()        
     
     def retrieve_tournaments(self, limit: int):
-        _, crsr = self.init()
+        conn, crsr = self.init()
         
         crsr.execute("SELECT * FROM tournaments limit %s", [limit])
-        return crsr.fetchall()
+        retrieved = crsr.fetchall()
+        conn.commit()
+        conn.close()
+        return retrieved
     
     def update(self, to_update_info: dict):
         """
-        :param tournament_info: a dictionary which only contains the keys is_over and id.
+        :param to_update_info: a dictionary which only contains the keys is_over and id.
         """
         conn, crsr = self.init()
         
@@ -89,21 +100,15 @@ class Tournaments:
         conn.close()
 
     def get_current_tournament_id(self):
-        _, crsr = self.init()
+        conn, crsr = self.init()
         
         crsr.execute("SELECT id FROM tournaments WHERE is_over = False", [])
-        retrieved =  crsr.fetchall()
-        return retrieved[0][0]
-
-
-if __name__ == "__main__":
-    tournaments_instance = Tournaments('db.ini')
-    tournaments_instance.clear_table()
-    tournaments_instance.add_tournament([4])
-    tournaments_instance.update({'id': 25, 'is_over': True})
-    tournaments_instance.add_tournament([2])
-    tournaments_instance.add_tournament([10])
-    print(tournaments_instance.get_current_tournament_id())
-    print(tournaments_instance.retrieve_tournaments(10))
-
-    
+        
+        retrieved_id = None
+        try:
+            retrieved_id =  crsr.fetchall()[0][0]
+        except:
+            pass
+        conn.commit()
+        conn.close()
+        return retrieved_id
