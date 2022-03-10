@@ -1,3 +1,5 @@
+from operator import is_
+import re
 from connect import Connect
 
 class Tournaments:
@@ -13,7 +15,7 @@ class Tournaments:
         return self.connect.init(self.db)
         
     def is_tournaments_exist(self):
-        conn, crsr = self.init()
+        _, crsr = self.init()
         crsr.execute("show tables;")
         tables = crsr.fetchall()
         tables = [item[0] for item in tables]
@@ -46,65 +48,62 @@ class Tournaments:
                      """)
         conn.commit()
         conn.close()
-     
+    
     def add_tournament(self, tournament_info: list):
         """
-        :param tournament_info: list containing [public_address, full_name]
+        :param tournament_info: list containing [num_rounds]
         """
         
-        # add round_num and is_rail
-        tournament_info.append(0)
+        # Setting the is_over in the tables to False.
         tournament_info.append(False)
-        
+
         conn, crsr = self.init()
-        crsr.execute("""INSERT INTO tournaments (public_address, full_name, round_num, is_rail) 
-                     VALUES (%s, %s, %s, %s)""", tournament_info)
+        crsr.execute("""INSERT INTO tournaments (num_rounds, is_over) 
+                     VALUES (%s, %s)""", tournament_info)
         
         conn.commit()
         conn.close()        
     
     def retrieve_tournaments(self, limit: int):
-        conn, crsr = self.init()
+        _, crsr = self.init()
         
         crsr.execute("SELECT * FROM tournaments limit %s", [limit])
         return crsr.fetchall()
     
-    def create_index(self):
-        conn, crsr = self.init()
-
-        crsr.execute("CREATE INDEX public_address_hash_index ON tournaments (public_address);")
-        
-        conn.commit()
-        conn.close()
-    
     def update(self, to_update_info: dict):
+        """
+        :param tournament_info: a dictionary which only contains the keys is_over and id.
+        """
         conn, crsr = self.init()
         
-        public_address = to_update_info["public_address"]
-        del to_update_info["public_address"]
-        
-        keys = list(to_update_info.keys())
-        values = list(to_update_info.values())
-        
-        update_fields_expression = ""
-        for item in keys:
-            update_fields_expression += item + " = " + "%s, "
-        update_fields_expression = update_fields_expression[:-2]
-        
-        values.append(public_address)
-        crsr.execute(f"UPDATE tournaments SET {update_fields_expression} WHERE public_address = %s", values)
-        
+        is_over = to_update_info['is_over']
+        tournament_id = to_update_info['id']
+        values = [is_over, tournament_id]
+
+        # Can't turn finished tournaments to unfinished.
+        if not is_over:
+            return
+
+        crsr.execute(f"UPDATE tournaments SET is_over = %s WHERE id = %s", values)
         conn.commit()
         conn.close()
+
+    def get_current_tournament_id(self):
+        _, crsr = self.init()
+        
+        crsr.execute("SELECT id FROM tournaments WHERE is_over = False", [])
+        retrieved =  crsr.fetchall()
+        return retrieved[0][0]
 
 
 if __name__ == "__main__":
     tournaments_instance = Tournaments('db.ini')
-    # tournaments_instance.delete_table()
-    tournaments_instance.create_table()
-    # tournaments_instance.create_index()
-    
-    tournaments_instance.add_tournament(["address_1", "first last"])
-    tournaments_instance.update({"round_num": 3, "public_address": "address_1", "full_name": "fdsds last", "is_rail": True})
+    tournaments_instance.clear_table()
+    tournaments_instance.add_tournament([4])
+    tournaments_instance.update({'id': 25, 'is_over': True})
+    tournaments_instance.add_tournament([2])
+    tournaments_instance.add_tournament([10])
+    print(tournaments_instance.get_current_tournament_id())
+    print(tournaments_instance.retrieve_tournaments(10))
 
     
