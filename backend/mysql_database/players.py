@@ -34,7 +34,7 @@ class Players:
         
         conn.commit()
         conn.close()
-    
+     
     def create_table(self):
         conn, crsr = self.init()
         
@@ -48,7 +48,7 @@ class Players:
                      """)
         conn.commit()
         conn.close()
-    
+     
     def add_player(self, player_info: list):
         """
         :param player_info: list containing [public_address, full_name]

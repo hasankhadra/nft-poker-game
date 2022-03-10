@@ -1,3 +1,4 @@
+from typing import Concatenate
 import MySQLdb
 import configparser
 
@@ -57,7 +58,7 @@ class Connect:
 
 
 if __name__ == "__main__":
-    x = Init("db.ini")
+    x = Connect("db.ini")
     conn, crsr = x.init("nft_poker_game")
     
     
