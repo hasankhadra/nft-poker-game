@@ -1,11 +1,11 @@
-from connect import Init
+from connect import Connect
 
 class Players:
     
     def __init__(self, file):
         self.db = 'nft_poker_game'
         self.config_file = file
-        self.connect = Init(self.config_file)
+        self.connect = Connect(self.config_file)
         if not self.is_players_exist():
             self.create_table()
         

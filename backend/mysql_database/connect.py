@@ -1,7 +1,7 @@
 import MySQLdb
 import configparser
 
-class Connect:
+class Init:
     
     def __init__(self, file, db=None):
         config = configparser.ConfigParser()
@@ -26,18 +26,20 @@ class Connect:
         return self.conn, crsr
 
 
-class Init:
+class Connect:
     
     def __init__(self, file):
         self.config_file = file
-        self.connect = Connect(self.config_file)
+        self.connect = Init(self.config_file)
+        self.connection = None
     
     def init(self, db_name):
         if not self.is_db_exist(db_name):
             self.create_db(db_name)
             
-        connect = Connect(self.config_file, db_name)
-        return connect.init()
+        if not self.connection:
+            self.connection = Init(self.config_file, db_name)
+        return self.connection.init()
         
     def is_db_exist(self, db_name):
         conn, crsr = self.connect.init()
