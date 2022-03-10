@@ -1,4 +1,3 @@
-from typing import Concatenate
 import MySQLdb
 import configparser
 
@@ -8,23 +7,28 @@ class Init:
         config = configparser.ConfigParser()
         
         config.read(file)
-        if db is None:
-            self.conn = MySQLdb.connect(
-                host=config['mysql']['host'],
-                port=int(config['mysql']['port']),
-                user=config['mysql']['user'],
-                passwd=config['mysql']['password'])
-        else:
-            self.conn = MySQLdb.connect(
-                host=config['mysql']['host'],
-                port=int(config['mysql']['port']),
-                db=db,
-                user=config['mysql']['user'],
-                passwd=config['mysql']['password'])
+        
+        self.host=config['mysql']['host']
+        self.port=int(config['mysql']['port'])
+        self.user=config['mysql']['user']
+        self.passwd=config['mysql']['password']
+        self.db = db if db else None
         
     def init(self):
-        crsr = self.conn.cursor()
-        return self.conn, crsr
+        if self.db:
+            connection = MySQLdb.connect(
+                host=self.host,
+                port=self.port,
+                db=self.db,
+                user=self.user,
+                passwd=self.passwd)
+        else:
+            connection = MySQLdb.connect(
+                host=self.host,
+                port=self.port,
+                user=self.user,
+                passwd=self.passwd)
+        return connection, connection.cursor()
 
 
 class Connect:
@@ -38,8 +42,9 @@ class Connect:
         if not self.is_db_exist(db_name):
             self.create_db(db_name)
             
-        if not self.connection:
+        if self.connection == None:
             self.connection = Init(self.config_file, db_name)
+
         return self.connection.init()
         
     def is_db_exist(self, db_name):
