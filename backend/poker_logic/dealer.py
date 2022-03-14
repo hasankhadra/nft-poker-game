@@ -50,16 +50,16 @@ def init_combos():
     global tier_to_combos
     
     ranges = {
-        "1": "22+, A2s+, K2s+, Q2s+, J2s+, T2s+, 92s+, 82s+, 72s+, 62s+, 52s+, 42s+, 32s, A2o+, K2o+, Q2o+, J2o+, T2o+, 92o+, 82o+, 72o+, 62o+, 52o+, 42o+, 32o".split(","),
-        "2": "22+, A2s+, K2s+, Q2s+, J2s+, T2s+, 92s+, 82s+, 72s+, 62s+, 52s+, 42s+, A2o+, K2o+, Q2o+, J4o+, T6o+, 96o+, 86o+, 76o".split(","),
-        "3": "22+, A2s+, K2s+, Q2s+, J2s+, T5s+, 96s+, 86s+, 75s+, A2o+, K5o+, Q7o+, J8o+, T8o+".split(","),
-        "4": "55+, AKs, A8s-AJs, A6s, A2s-A4s, K4s+, K2s, Q8s+, J8s+, J2s, T9s, 82s, A8o+, K9o+, QTo+, JTo".split(","),
-        "5": "55+, A3s+, K7s+, Q8s+, J9s+, T9s, A9o+, KTo+, QJo".split(","),
-        "6": "66+, A5s+, K9s+, Q9s+, JTs, ATo+, KJo+".split(","),
-        "7": "77+, A9s+, KTs+, QJs, AJo+, KQo".split(","),
-        "8": "88+, ATs+, KTs+, QJs, AQo+".split(","),
-        "9": "99+, AJs+, KQs, AKo".split(","),
-        "10": "TT+".split(","),
+        "tier_1": "22+, A2s+, K2s+, Q2s+, J2s+, T2s+, 92s+, 82s+, 72s+, 62s+, 52s+, 42s+, 32s, A2o+, K2o+, Q2o+, J2o+, T2o+, 92o+, 82o+, 72o+, 62o+, 52o+, 42o+, 32o".split(","),
+        "tier_2": "22+, A2s+, K2s+, Q2s+, J2s+, T2s+, 92s+, 82s+, 72s+, 62s+, 52s+, 42s+, A2o+, K2o+, Q2o+, J4o+, T6o+, 96o+, 86o+, 76o".split(","),
+        "tier_3": "22+, A2s+, K2s+, Q2s+, J2s+, T5s+, 96s+, 86s+, 75s+, A2o+, K5o+, Q7o+, J8o+, T8o+".split(","),
+        "tier_4": "55+, AKs, A8s-AJs, A6s, A2s-A4s, K4s+, K2s, Q8s+, J8s+, J2s, T9s, 82s, A8o+, K9o+, QTo+, JTo".split(","),
+        "tier_5": "55+, A3s+, K7s+, Q8s+, J9s+, T9s, A9o+, KTo+, QJo".split(","),
+        "tier_6": "66+, A5s+, K9s+, Q9s+, JTs, ATo+, KJo+".split(","),
+        "tier_7": "77+, A9s+, KTs+, QJs, AJo+, KQo".split(","),
+        "tier_8": "88+, ATs+, KTs+, QJs, AQo+".split(","),
+        "tier_9": "99+, AJs+, KQs, AKo".split(","),
+        "tier_10": "TT+".split(","),
         "all_pairs": "22+".split(","),
         "all_the_aces": "AA, A2s+, A2o+".split(","),
         "ace_king_off_suit": "AKs, AKo".split(","),
@@ -89,7 +89,7 @@ def init_combos():
 def write_to_file():
     init_combos()
     with open('tiers_hands.json', "w") as file:
-        json.dump(tier_to_combos, file)
+        json.dump(tier_to_combos, file, indent=4, sort_keys=True)
 
         
 def draw_combo(tier: int, opp_hand: Union[str, None]) -> str:
