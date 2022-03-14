@@ -118,6 +118,7 @@ class Rounds:
         contains all columns to be updated in the format {column_name: new_value, ...}
         NOTE: The dict should contain the key-value pair {id: value} of the round
         """
+        assert False, "cannot edit any column"
         conn, crsr = self.init()
         
         id = to_update_info["id"]
