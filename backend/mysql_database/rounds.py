@@ -2,6 +2,8 @@ from connect import Connect
 from datetime import datetime
 from tournaments import Tournaments
 
+from . import create_table_rounds
+
 class Rounds:
     
     def __init__(self):
@@ -41,14 +43,7 @@ class Rounds:
     def create_table(self):
         conn, crsr = self.init()
         
-        crsr.execute("""
-            CREATE TABLE IF NOT EXISTS rounds (
-                id INT AUTO_INCREMENT PRIMARY KEY, 
-                tournament_id INT NOT NULL,
-                round_num INT NOT NULL,
-                start_time DATE NOT NULL,
-                end_time DATE NOT NULL);
-            """)
+        crsr.execute(create_table_rounds)
         conn.commit()
         conn.close()
      

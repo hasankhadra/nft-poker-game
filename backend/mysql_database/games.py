@@ -1,7 +1,11 @@
 from connect import Connect
 
+from . import create_table_games
+
 class Games:
     
+    editable_fields = ['winner_id', 'player1_combo', 'player2_combo', 'bad_beat']
+
     def __init__(self):
         self.db = 'nft_poker_game'
         self.config_file = 'db.ini'
@@ -40,19 +44,7 @@ class Games:
     def create_table(self):
         conn, crsr = self.init()
         
-        crsr.execute("""
-                     CREATE TABLE IF NOT EXISTS games (
-                        id INT AUTO_INCREMENT PRIMARY KEY,
-                        round_id INT NOT NULL,
-                        player1_id INT NOT NULL,
-                        player2_id INT NOT NULL,
-                        winner_id INT,
-                        FOREIGN KEY (round_id) REFERENCES rounds(id),
-                        FOREIGN KEY (player1_id) REFERENCES players(id),
-                        FOREIGN KEY (player2_id) REFERENCES players(id),
-                        FOREIGN KEY (winner_id) REFERENCES players(id)
-                        );
-                     """)
+        crsr.execute(create_table_games)
         conn.commit()
         conn.close()
     
@@ -108,19 +100,30 @@ class Games:
         A method to update the games table. It ensures that the winner should be one of the players in the game.
         :param to_update_info: a dictionary which only contains the keys winner_id and id.
         """
-        
-        winner_id = to_update_info['winner_id']
         game_id = to_update_info['id']
-        values = [winner_id, game_id]
+        del to_update_info['id']
+
+        for key in to_update_info:
+            assert key in Games.editable_fields
 
         this_game = self.get_game(game_id)
 
-        assert this_game and (winner_id == game_id[1] or winner_id == game_id[2]) \
-                and game_id[3] is None
+        if 'winner_id' in to_update_info:
+            assert this_game and (to_update_info['winner_id'] == this_game[1] \
+                             or to_update_info['winner_id'] == this_game[2]) is None
+        
+        
+        values = list(to_update_info.values()) + [game_id]
+        
+        update_fields_expression = ""
+        for item in to_update_info:
+            update_fields_expression += item + " = %s, "
+        update_fields_expression = update_fields_expression[:-2]
+        
 
         conn, crsr = self.init()
 
-        crsr.execute(f"UPDATE games SET winner_id = %s WHERE id = %s", values)
+        crsr.execute(f"UPDATE players SET {update_fields_expression} WHERE id = %s", values)
         conn.commit()
         conn.close()
         

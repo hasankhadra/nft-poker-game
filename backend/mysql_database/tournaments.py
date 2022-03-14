@@ -1,5 +1,7 @@
 from connect import Connect
 
+from . import create_table_tournaments
+
 class Tournaments:
     
     def __init__(self):
@@ -40,12 +42,7 @@ class Tournaments:
     def create_table(self):
         conn, crsr = self.init()
         
-        crsr.execute("""
-                     CREATE TABLE IF NOT EXISTS tournaments (
-                        id INT AUTO_INCREMENT PRIMARY KEY, 
-                        num_rounds INT NOT NULL,
-                        is_over BOOLEAN NOT NULL);
-                     """)
+        crsr.execute(create_table_tournaments)
         conn.commit()
         conn.close()
     
@@ -54,11 +51,9 @@ class Tournaments:
         :param tournament_info: list containing [num_rounds]
         """
         
-        try:
-            assert len(tournament_info) == 1 and isinstance(tournament_info[0], int) \
-                   and tournament_info[0] > 0
-        except:
-            return
+        assert len(tournament_info) == 1 and isinstance(tournament_info[0], int) \
+            and tournament_info[0] > 0
+
 
         # Setting the is_over in the tables to False.
         tournament_info.append(False)
