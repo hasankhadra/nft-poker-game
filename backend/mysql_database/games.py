@@ -2,9 +2,9 @@ from connect import Connect
 
 class Games:
     
-    def __init__(self, file):
+    def __init__(self):
         self.db = 'nft_poker_game'
-        self.config_file = file
+        self.config_file = 'db.ini'
         self.connect = Connect(self.config_file)
         if not self.is_games_exist():
             self.create_table()

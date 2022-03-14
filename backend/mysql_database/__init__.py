@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS players (
     public_address varchar(255) NOT NULL,
     username VARCHAR(255) NOT NULL, 
     round_id INT NOT NULL,
+    nft_tier VARCHAR(40),
     is_rail BOOLEAN NOT NULL,
     bounty double NOT NULL,
     FOREIGN KEY (round_id) REFERENCES rounds(id));
