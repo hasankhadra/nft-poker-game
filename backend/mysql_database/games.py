@@ -66,7 +66,7 @@ class Games:
 
         conn, crsr = self.init()
         crsr.execute("""INSERT INTO games (round_id, player1_id, player2_id) 
-                     VALUES (%s, %s)""", game_info)
+                     VALUES (%s, %s, %s)""", game_info)
         
         conn.commit()
         conn.close()        
@@ -123,3 +123,7 @@ class Games:
         crsr.execute(f"UPDATE games SET winner_id = %s WHERE id = %s", values)
         conn.commit()
         conn.close()
+        
+if __name__ == "__main__":
+    games_instance = Games()
+    games_instance.add_game([1, 3, 4])

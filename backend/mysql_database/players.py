@@ -97,7 +97,8 @@ class Players:
         """
         conn, crsr = self.init()
         
-        res = crsr.execute("SELECT * FROM players WHERE id = %s", player_info)
+        crsr.execute("SELECT * FROM players WHERE id = %s", player_info)
+        res = crsr.fetchall()
         
         conn.close()
         return res
@@ -146,15 +147,8 @@ class Players:
 
 if __name__ == "__main__":
     players_instance = Players()
-    # players_instance.delete_table()
-    players_instance.create_table()
-    
-    # players_instance.add_player(["1", "address_3", "stalker"])
-    players_instance.transfer_nft_ownership("address_1", "hasan_address", "1")
-    
-    # players_instance.update({"round_id": 3, "public_address": "address_1", "username": "fdsds last", "is_rail": True, "id": 1})
-    # players_instance.update({"round_id": 3, "public_address": "address_1", "username": "fdsds last", "is_rail": True, "id": 2})
-    print(players_instance.get_players())
+    players_instance.add_player(["nft_id_5", "public_address_5", "kamil"])
+    players_instance.transfer_nft_ownership("public_address_1", "public_address_2", "nft_id_1")
 
 """
 "CREATE INDEX public_address_hash_index ON players (public_address);"

@@ -23,6 +23,8 @@ CREATE TABLE IF NOT EXISTS games (
     round_id INT NOT NULL,
     player1_id INT NOT NULL,
     player2_id INT NOT NULL,
+    player1_hand VARCHAR(20),
+    player2_hand VARCHAR(20),
     winner_id INT,
     FOREIGN KEY (round_id) REFERENCES rounds(id),
     FOREIGN KEY (player1_id) REFERENCES players(id),
