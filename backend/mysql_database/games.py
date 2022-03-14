@@ -1,12 +1,12 @@
-from connect import Connect
+from mysql_database.connect import Connect
 
 class Games:
     
     editable_fields = ['winner_id', 'player1_hand', 'player2_hand', 'bad_beat']
 
-    def __init__(self):
+    def __init__(self, config_file):
         self.db = 'nft_poker_game'
-        self.config_file = 'db.ini'
+        self.config_file = config_file
         self.connect = Connect(self.config_file)
         if not self.is_games_exist():
             self.create_table()

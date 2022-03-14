@@ -1,4 +1,5 @@
-from connect import Connect
+from mysql_database.connect import Connect
+from MySQLdb import OperationalError
 
 create_table_tournaments = """
 CREATE TABLE IF NOT EXISTS tournaments (
@@ -50,7 +51,7 @@ CREATE TABLE IF NOT EXISTS players (
 table_players_columns = ['id', 'nft_id', 'public_address', 'username', 'round_id', 
                          'nft_tier', 'is_rail', 'bounty']
 
-connection = Connect('db.ini')
+connection = Connect('mysql_database/db.ini')
 conn, crsr = connection.init('nft_poker_game')
 
 crsr.execute(create_table_tournaments)
@@ -66,11 +67,14 @@ games_round_id_index = "CREATE INDEX round_id_index ON games (round_id);"
 rounds_tournament_id_index = "CREATE INDEX tournament_id_index ON rounds (tournament_id);"
 rounds_round_num_index = "CREATE INDEX round_num_index ON rounds (round_num);"
 
-crsr.execute(players_public_address_index)
-crsr.execute(tournaments_is_over_index)
-crsr.execute(games_round_id_index)
-crsr.execute(rounds_tournament_id_index)
-crsr.execute(rounds_round_num_index)
-
+try:
+    crsr.execute(players_public_address_index)
+    crsr.execute(tournaments_is_over_index)
+    crsr.execute(games_round_id_index)
+    crsr.execute(rounds_tournament_id_index)
+    crsr.execute(rounds_round_num_index)
+except OperationalError as e:
+    print(e)
+    
 conn.commit()
 conn.close()

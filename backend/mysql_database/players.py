@@ -1,15 +1,15 @@
-from connect import Connect
-from tournaments import Tournaments
-from rounds import Rounds
+from mysql_database.connect import Connect
+from mysql_database.tournaments import Tournaments
+from mysql_database.rounds import Rounds
 
 class Players:
     
-    def __init__(self):
+    def __init__(self, config_file):
         self.db = 'nft_poker_game'
-        self.config_file = 'db.ini'
+        self.config_file = config_file
         self.connect = Connect(self.config_file)
-        self.tournaments = Tournaments()
-        self.rounds = Rounds()
+        self.tournaments = Tournaments(config_file)
+        self.rounds = Rounds(config_file)
         if not self.is_players_exist():
             self.create_table()
         

@@ -1,17 +1,20 @@
+import json
 from flask import Flask, request
 from flask_socketio import SocketIO, join_room, leave_room, send, emit, rooms, ConnectionRefusedError
 import os
-from backend import TOTAL_PLAYERS
+from __init__ import TOTAL_PLAYERS
 from mysql_database.players import Players
+from mysql_database.games import Games
 from dotenv import load_dotenv
-from typing import Union
+from poker_logic.dealer import draw_combo
 load_dotenv()
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ["SECRET_KEY"]
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-players_instance = Players()
+players_instance = Players("mysql_database/db.ini")
+games_instance = Games("mysql_database/db.ini")
 
 @socketio.on("register")
 def register_player(data: dict):
@@ -68,6 +71,31 @@ def get_rooms():
     # TODO return all games' rooms this player will join
     pass
 
+@socketio.on("draw_combo")
+def draw_combo(data):
+    """
+    data: dict
+    {
+        player_id: ..,
+        game_id: ..
+    }
+    """
+    
+    game_id = data["game_id"]
+    player_id = data["player_id"]
+    
+    # get player nft tier
+    nft_tier = players_instance.get_player_by_id([player_id])[5]
+    
+    # get opponent combo if any
+    cur_game = games_instance.get_game([game_id])
+    opp_combo = cur_game[5] if player_id == cur_game[2] else cur_game[4]
+    
+    player_combo = draw_combo(nft_tier, opp_combo)
+    
+    send('draw_combo', json.dumps({"player_combo": player_combo}))
+    
+    
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)
