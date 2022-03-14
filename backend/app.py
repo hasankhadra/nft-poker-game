@@ -1,64 +1,73 @@
-from flask import Flask, render_template_string, redirect, request, session, url_for
-from flask_session import Session
-from flask_socketio import SocketIO, join_room, leave_room, send, emit, rooms
-import json
+from flask import Flask, request
+from flask_socketio import SocketIO, join_room, leave_room, send, emit, rooms, ConnectionRefusedError
 import os
+from backend import TOTAL_PLAYERS
+from mysql_database.players import Players
 from dotenv import load_dotenv
-
+from typing import Union
 load_dotenv()
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ["SECRET_KEY"]
 socketio = SocketIO(app, cors_allowed_origins="*")
-messages = {}
-counter = 1
-users = {}
 
+players_instance = Players()
 
-@socketio.on('message')
-def handle_message(msg):
-    global counter, messages
-    print("Sent message is ", msg)
-    to_send_msg = {"id": counter,
-           "user" : msg["name"],
-           "value": msg["message"],
-           "time": "Now",
-           "room": msg["room"]
-           }
-    counter += 1
-    messages[msg["room"]].append(to_send_msg)
-    print(messages)
-    send(to_send_msg, to=msg["room"])
-    #threading.Timer(10, delete_message, (counter - 1, msg["room"])).start()
-
-@socketio.on('getMessages')
-def get_messages(data):
-    global messages
-    socketio.emit("getMessages", json.dumps(messages[data["room"]]), to=data["room"])
-
+@socketio.on("register")
+def register_player(data: dict):
+    """
+    :param data: dict containing 
+    {
+        MAYBE NFT ID: ,
+        public_address: player public address,
+        username: player username
+    }
+    """
+    
+    if players_instance.get_num_players() == TOTAL_PLAYERS:
+        raise ConnectionRefusedError('There is no room left for new players!')
+    
+    players_instance.add_player(["TODO_get_nft_id", data["public_address"], data["username"]])
+    
+    if players_instance.get_num_players() == TOTAL_PLAYERS:
+        # TODO start initiating graph for games and storing rooms
+        # for each game
+        pass
+    
+@socketio.on('log_in_round')
+def log_in_round(data: dict):
+    # TODO check if all nfts are still owned by this user.
+    pass
+    
 @socketio.on('join_room')
 def on_join(data):
     """
     data: dict
-    {'user': player username,
-    'room': room to be assigned to}
+    {
+        'id': player id,
+        'room': room to be assigned to
+    }
     """
-    user = data['user']
+    user = data['id']
     room = data['room']
-    if not messages.get(room):
-        messages[room] = []
     join_room(room)
     send(user + ' has entered the room.', to=room)
 
 @socketio.on('leave')
 def on_leave(data):
-    name = data['name']
-    room = data['room']
-    leave_room(room)
-    send(name + ' has left the room.', to=room)
+    """
+    :param data: dict
+    {
+        'room': room to leave
+    }
+    """
+    leave_room(data['room'])
 
-@socketio.on("test")
-def test():
-    print("Current rooms for this user:", rooms(sid=request.sid))
+@socketio.on("get_rooms")
+def get_rooms():
+    # TODO return all games' rooms this player will join
+    pass
+
+
 if __name__ == "__main__":
-    socketio.run(app)
+    socketio.run(app, debug=True)
