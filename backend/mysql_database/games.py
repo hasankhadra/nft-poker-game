@@ -129,4 +129,3 @@ class Games:
         
 if __name__ == "__main__":
     games_instance = Games()
-    games_instance.add_game([1, 3, 4])

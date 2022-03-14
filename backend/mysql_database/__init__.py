@@ -47,6 +47,9 @@ CREATE TABLE IF NOT EXISTS players (
     FOREIGN KEY (round_id) REFERENCES rounds(id));
 """
 
+table_players_columns = ['id', 'nft_id', 'public_address', 'username', 'round_id', 
+                         'nft_tier', 'is_rail', 'bounty']
+
 connection = Connect('db.ini')
 conn, crsr = connection.init('nft_poker_game')
 
