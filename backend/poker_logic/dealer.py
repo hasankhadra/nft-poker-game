@@ -92,7 +92,7 @@ def write_to_file():
         json.dump(tier_to_combos, file, indent=4, sort_keys=True)
 
         
-def draw_combo(tier: int, opp_hand: Union[str, None]) -> str:
+def draw_combo(tier: str, opp_hand: Union[str, None]) -> str:
     
     import random
     with open('tiers_hands.json') as json_file:
@@ -113,5 +113,6 @@ def draw_combo(tier: int, opp_hand: Union[str, None]) -> str:
 
 
 if __name__ == "__main__":
-    write_to_file()
-    print(draw_combo("ace_king_suited", "AdKh"))
+    pass
+    # write_to_file()
+    # print(tier_to_combos.keys())
