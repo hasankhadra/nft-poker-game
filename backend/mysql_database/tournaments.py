@@ -97,7 +97,3 @@ class Tournaments:
         conn.commit()
         conn.close()
         return retrieved_id
-
-if __name__ == "__main__":
-    tournaments_instance = Tournaments()
-    

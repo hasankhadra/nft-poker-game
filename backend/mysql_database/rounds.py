@@ -123,10 +123,3 @@ class Rounds:
         
         conn.commit()
         conn.close()
-
-if __name__ == "__main__":
-    rounds_instance = Rounds()
-
-"""
-"CREATE INDEX public_address_hash_index ON rounds (public_address);"
-"""

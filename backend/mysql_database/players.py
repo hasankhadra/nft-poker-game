@@ -129,6 +129,4 @@ class Players:
         conn.commit()
         conn.close()
 
-if __name__ == "__main__":
-    players_instance = Players()
     

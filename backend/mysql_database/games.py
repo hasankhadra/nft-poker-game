@@ -123,7 +123,3 @@ class Games:
         crsr.execute(f"UPDATE games SET {update_fields_expression} WHERE id = %s", values)
         conn.commit()
         conn.close()
-        
-if __name__ == "__main__":
-    games_instance = Games()
-    
