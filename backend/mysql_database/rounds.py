@@ -2,8 +2,6 @@ from connect import Connect
 from datetime import datetime
 from tournaments import Tournaments
 
-from . import create_table_rounds
-
 class Rounds:
     
     def __init__(self):
@@ -40,13 +38,6 @@ class Rounds:
         conn.commit()
         conn.close()
      
-    def create_table(self):
-        conn, crsr = self.init()
-        
-        crsr.execute(create_table_rounds)
-        conn.commit()
-        conn.close()
-     
     def add_round(self, round_info: list):
         """
         :param round_info: list containing [round_num, start_time, end_time]
@@ -75,12 +66,13 @@ class Rounds:
         :return: tuple of tuples containing all the rounds inside a specific tournament
         """
         conn, crsr = self.init()
-        res = crsr.execute("SELECT * from rounds WHERE tournament_id = %s", round_info)
+        crsr.execute("SELECT * from rounds WHERE tournament_id = %s", round_info)
+        result = crsr.fetchall()
         
         conn.close()
-        return res
+        return result
     
-    def get_next_round_id(self, round_info: list):
+    def get_round_id_by_round_num(self, round_info: list):
         """
         :param round_info: list 
         containing [tournament_id, round_num]
@@ -135,12 +127,6 @@ class Rounds:
 
 if __name__ == "__main__":
     rounds_instance = Rounds()
-    rounds_instance.delete_table()
-    # rounds_instance.create_table()
-    # rounds_instance.create_index()
-    
-    # rounds_instance.add_round(["address_1", "first last"])
-    # rounds_instance.update({"round_num": 3, "public_address": "address_1", "full_name": "fdsds last", "is_rail": True})
 
 """
 "CREATE INDEX public_address_hash_index ON rounds (public_address);"

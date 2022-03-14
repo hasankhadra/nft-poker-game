@@ -1,6 +1,5 @@
 from connect import Connect
 
-from . import create_table_tournaments
 
 class Tournaments:
     
@@ -38,14 +37,7 @@ class Tournaments:
         
         conn.commit()
         conn.close()
-     
-    def create_table(self):
-        conn, crsr = self.init()
         
-        crsr.execute(create_table_tournaments)
-        conn.commit()
-        conn.close()
-    
     def add_tournament(self, tournament_info: list):
         """
         :param tournament_info: list containing [num_rounds]
@@ -105,3 +97,7 @@ class Tournaments:
         conn.commit()
         conn.close()
         return retrieved_id
+
+if __name__ == "__main__":
+    tournaments_instance = Tournaments()
+    

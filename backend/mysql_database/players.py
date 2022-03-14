@@ -38,23 +38,7 @@ class Players:
         
         conn.commit()
         conn.close()
-     
-    def create_table(self):
-        conn, crsr = self.init()
-        
-        crsr.execute("""
-            CREATE TABLE IF NOT EXISTS players (
-                id INT AUTO_INCREMENT PRIMARY KEY, 
-                nft_id VARCHAR(255) NOT NULL,
-                public_address varchar(255) NOT NULL,
-                username VARCHAR(255) NOT NULL, 
-                round_id INT NOT NULL,
-                is_rail BOOLEAN NOT NULL,
-                bounty double NOT NULL);
-            """)
-        conn.commit()
-        conn.close()
-     
+
     def add_player(self, player_info: list):
         """
         :param player_info: list containing [nft_id, public_address, username]
@@ -63,7 +47,7 @@ class Players:
         
         # TODO
         tournament_id = self.tournaments.get_current_tournament_id()
-        round_id = self.rounds.get_next_round_id([tournament_id, 1])
+        round_id = self.rounds.get_round_id_by_round_num([tournament_id, 3])
         
         player_info += [round_id, False, 0.0]
         
@@ -86,10 +70,10 @@ class Players:
             query += f" WHERE is_rail = false"
         
         query += " limit %s"
-        res = crsr.execute(query, [limit])
+        result = crsr.execute(query, [limit])
         
         conn.close()
-        return res
+        return result
     
     def get_player_by_id(self, player_info: list):
         """
@@ -98,10 +82,10 @@ class Players:
         conn, crsr = self.init()
         
         crsr.execute("SELECT * FROM players WHERE id = %s", player_info)
-        res = crsr.fetchall()
+        result = crsr.fetchall()
         
         conn.close()
-        return res
+        return result
     
     def transfer_nft_ownership(self, from_public_address: str, to_public_address: str, nft_id: str):
         conn, crsr = self.init()
@@ -147,9 +131,4 @@ class Players:
 
 if __name__ == "__main__":
     players_instance = Players()
-    players_instance.add_player(["nft_id_5", "public_address_5", "kamil"])
-    players_instance.transfer_nft_ownership("public_address_1", "public_address_2", "nft_id_1")
-
-"""
-"CREATE INDEX public_address_hash_index ON players (public_address);"
-"""
+    

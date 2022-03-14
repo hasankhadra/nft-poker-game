@@ -55,5 +55,19 @@ crsr.execute(create_table_rounds)
 crsr.execute(create_table_players)
 crsr.execute(create_table_games)
 
+
+# creating indexes
+players_public_address_index = "CREATE INDEX public_address_index ON players (public_address);"
+tournaments_is_over_index = "CREATE INDEX is_over_index ON tournaments (is_over);"
+games_round_id_index = "CREATE INDEX round_id_index ON games (round_id);"
+rounds_tournament_id_index = "CREATE INDEX tournament_id_index ON rounds (tournament_id);"
+rounds_round_num_index = "CREATE INDEX round_num_index ON rounds (round_num);"
+
+crsr.execute(players_public_address_index)
+crsr.execute(tournaments_is_over_index)
+crsr.execute(games_round_id_index)
+crsr.execute(rounds_tournament_id_index)
+crsr.execute(rounds_round_num_index)
+
 conn.commit()
 conn.close()
