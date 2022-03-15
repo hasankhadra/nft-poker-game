@@ -25,24 +25,23 @@ def register_player(data: dict):
     """
     :param data: dict containing 
     {
-        MAYBE NFT ID: ,
-        public_address: player public address,
-        username: player username
+        MAYBE NFT ID: str,
+        public_address: str,
+        username: str
     }
     """
-    cur_players_count = num_players_instance.get_cur_count()
-    if cur_players_count == TOTAL_PLAYERS:
+    if num_players_instance.get_cur_count() == TOTAL_PLAYERS:
         raise ConnectionRefusedError('There is no room left for new players!')
     
     if players_instance.exists_username([data["username"]]):
         raise ConnectionRefusedError("Username already exists")
     
-    players_instance.add_player(["TODO_get_nft_id", data["public_address"], data["username"], tiers_distribution[cur_players_count]])
+    players_instance.add_player(["TODO_get_nft_id", data["public_address"], data["username"], tiers_distribution[num_players_instance.get_cur_count()]])
     num_players_instance.increase_players_num()
     
     if num_players_instance.get_cur_count() == TOTAL_PLAYERS:
-        # TODO start initiating graph for games and storing rooms
-        # for each game
+        # TODO start initiating graph for games and storing the games (shahin)
+        # inside games table to be used when the next round starts
         pass
     
 @socketio.on('log_in_round')
@@ -55,28 +54,25 @@ def on_join(data):
     """
     data: dict
     {
-        'id': player id,
-        'room': room to be assigned to
+        'room': room to be assigned to (str)
     }
     """
-    user = data['id']
     room = data['room']
     join_room(room)
-    send(user + ' has entered the room.', to=room)
 
 @socketio.on('leave')
 def on_leave(data):
     """
     :param data: dict
     {
-        'room': room to leave
+        'room': room to leave (str)
     }
     """
     leave_room(data['room'])
 
 @socketio.on("get_rooms")
 def get_rooms():
-    # TODO return all games' rooms this player will join
+    # TODO return all rooms this player will join during this round
     pass
 
 @socketio.on("draw_combo")
@@ -104,7 +100,6 @@ def draw_combo(data):
     # update player hand
     player_num = "player1" if player_id == cur_game[2] else "player2"
     games_instance.update({"id": game_id, f"{player_num}_id": player_id, f"{player_num}_combo": player_combo})
-    
     
     send('draw_combo', json.dumps({"player_combo": player_combo}))
     

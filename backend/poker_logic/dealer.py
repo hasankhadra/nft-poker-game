@@ -90,9 +90,12 @@ def write_to_file():
     init_combos()
     with open('tiers_hands.json', "w") as file:
         json.dump(tier_to_combos, file, indent=4, sort_keys=True)
-
-        
+    
 def draw_combo(tier: str, opp_hand: Union[str, None]) -> str:
+    """
+    draw a combo for a player given his opponent hand and his tier
+    :return: string denoting a combo for the given tier (e.x. "Ah5c")
+    """
     
     import random
     with open('tiers_hands.json') as json_file:
@@ -110,7 +113,6 @@ def draw_combo(tier: str, opp_hand: Union[str, None]) -> str:
             break
     
     return combo
-
 
 if __name__ == "__main__":
     pass
