@@ -39,21 +39,41 @@ class Players:
         conn.commit()
         conn.close()
 
+    def exists_username(self, player_info: list):
+        """
+        :param player_info: list containing [username]
+        :return: True if the username is unique else False
+        """
+        conn, crsr = self.init()
+        tournament_id = self.tournaments.get_current_tournament_id()
+        rounds = self.rounds.get_rounds_by_tournament_id([tournament_id])
+        rounds = [column[0] for column in rounds]
+        
+        conditions = " round_id = %s OR" * len(rounds)
+        conditions = conditions[:-2]
+        
+        crsr.execute(f"SELECT username FROM players WHERE {conditions}", rounds)
+        usernames = crsr.fetchall()
+        usernames = [username[0] for username in usernames]
+        
+        conn.close()
+        
+        return player_info[0] in usernames
+    
     def add_player(self, player_info: list):
         """
-        :param player_info: list containing [nft_id, public_address, username]
+        :param player_info: list containing [nft_id, public_address, username, nft_tier]
         :return: id of the inserted player
         """
-        
-        # TODO
+
         tournament_id = self.tournaments.get_current_tournament_id()
         round_id = self.rounds.get_round_id_by_round_num([tournament_id, 3])
         
         player_info += [round_id, False, 0.0]
         
         conn, crsr = self.init()
-        crsr.execute("""INSERT INTO players (nft_id, public_address, username, round_id, is_rail, bounty) 
-                     VALUES (%s, %s, %s, %s, %s, %s)""", player_info)
+        crsr.execute("""INSERT INTO players (nft_id, public_address, username, nft_tier, round_id, is_rail, bounty) 
+                     VALUES (%s, %s, %s, %s, %s, %s, %s)""", player_info)
         
         new_id = crsr.lastrowid
         
@@ -70,7 +90,8 @@ class Players:
             query += f" WHERE is_rail = false"
         
         query += " limit %s"
-        result = crsr.execute(query, [limit])
+        crsr.execute(query, [limit])
+        result = crsr.fetchall()
         
         conn.close()
         return result
@@ -95,7 +116,7 @@ class Players:
         
         conn.commit()
         conn.close()
-               
+        
     def update(self, to_update_info: dict):
         """
         to_update_info: dict 

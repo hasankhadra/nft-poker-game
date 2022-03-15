@@ -48,8 +48,17 @@ CREATE TABLE IF NOT EXISTS players (
     FOREIGN KEY (round_id) REFERENCES rounds(id));
 """
 
+create_table_total_players = """
+CREATE TABLE IF NOT EXISTS num_players (
+    tournament_id INT NOT NULL,
+    count INT NOT NULL,
+    FOREIGN KEY (tournament_id) REFERENCES tournaments(id));
+"""
+
+
 table_players_columns = ['id', 'nft_id', 'public_address', 'username', 'round_id', 
                          'nft_tier', 'is_rail', 'bounty']
+
 
 connection = Connect('mysql_database/db.ini')
 conn, crsr = connection.init('nft_poker_game')
@@ -58,6 +67,7 @@ crsr.execute(create_table_tournaments)
 crsr.execute(create_table_rounds)
 crsr.execute(create_table_players)
 crsr.execute(create_table_games)
+crsr.execute(create_table_total_players)
 
 
 # creating indexes

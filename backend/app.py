@@ -2,9 +2,10 @@ import json
 from flask import Flask, request
 from flask_socketio import SocketIO, join_room, leave_room, send, emit, rooms, ConnectionRefusedError
 import os
-from __init__ import TOTAL_PLAYERS
+from __init__ import TOTAL_PLAYERS, get_tiers_distribution
 from mysql_database.players import Players
 from mysql_database.games import Games
+from mysql_database.num_players import Num_players
 from dotenv import load_dotenv
 from poker_logic.dealer import draw_combo
 load_dotenv()
@@ -15,6 +16,9 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 players_instance = Players("mysql_database/db.ini")
 games_instance = Games("mysql_database/db.ini")
+num_players_instance = Num_players("mysql_database/db.ini")
+
+tiers_distribution = get_tiers_distribution()
 
 @socketio.on("register")
 def register_player(data: dict):
@@ -26,13 +30,17 @@ def register_player(data: dict):
         username: player username
     }
     """
-    
-    if players_instance.get_num_players() == TOTAL_PLAYERS:
+    cur_players_count = num_players_instance.get_cur_count()
+    if cur_players_count == TOTAL_PLAYERS:
         raise ConnectionRefusedError('There is no room left for new players!')
     
-    players_instance.add_player(["TODO_get_nft_id", data["public_address"], data["username"]])
+    if players_instance.exists_username([data["username"]]):
+        raise ConnectionRefusedError("Username already exists")
     
-    if players_instance.get_num_players() == TOTAL_PLAYERS:
+    players_instance.add_player(["TODO_get_nft_id", data["public_address"], data["username"], tiers_distribution[cur_players_count]])
+    num_players_instance.increase_players_num()
+    
+    if num_players_instance.get_cur_count() == TOTAL_PLAYERS:
         # TODO start initiating graph for games and storing rooms
         # for each game
         pass
