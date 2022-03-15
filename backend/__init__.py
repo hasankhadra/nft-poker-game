@@ -2,7 +2,7 @@ import random
 
 TOTAL_PLAYERS = 16384
 RARE_TIERS = 129
-
+DB_CONFIG_FILE = "mysql_database/db.ini"
 normal_tiers = ['tier_1', 'tier_2', 'tier_3', 'tier_4', 'tier_5', 'tier_6', 'tier_7', 'tier_8', 'tier_9', 'tier_10']
 tiers = ['all_pairs', 'all_the_aces', 'ace_king_off_suit', 'broadway', 'pair_22', 'pair_33', 'pair_44', 'pair_55', 'pair_66', 'pair_77', 'pair_88', 'pair_99', 'pair_TT', 'pair_JJ', 'pair_QQ', 'pair_KK', 'pair_AA', 'ace_king_suited', 'jack_ten_suited']
 

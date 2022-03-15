@@ -2,7 +2,7 @@ import json
 from flask import Flask, request
 from flask_socketio import SocketIO, join_room, leave_room, send, emit, rooms, ConnectionRefusedError
 
-from __init__ import TOTAL_PLAYERS, get_tiers_distribution
+from __init__ import TOTAL_PLAYERS, get_tiers_distribution, DB_CONFIG_FILE
 
 from mysql_database.tournaments import Tournaments
 from mysql_database.players import Players
@@ -21,10 +21,10 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ["SECRET_KEY"]
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-players_instance = Players("mysql_database/db.ini")
-games_instance = Games("mysql_database/db.ini")
-num_players_instance = Num_players("mysql_database/db.ini")
-tournaments = Tournaments("mysql_database/db.ini")
+players_instance = Players(DB_CONFIG_FILE)
+games_instance = Games(DB_CONFIG_FILE)
+num_players_instance = Num_players(DB_CONFIG_FILE)
+tournaments = Tournaments(DB_CONFIG_FILE)
 
 tiers_distribution = get_tiers_distribution()
 
