@@ -84,8 +84,8 @@ def draw_combo(data):
     """
     data: dict
     {
-        player_id: ..,
-        game_id: ..
+        player_id: int,
+        game_id: int
     }
     """
     
@@ -93,13 +93,18 @@ def draw_combo(data):
     player_id = data["player_id"]
     
     # get player nft tier
-    nft_tier = players_instance.get_player_by_id([player_id])[5]
+    nft_tier = players_instance.get_player_by_id([player_id])[0][5]
     
     # get opponent combo if any
-    cur_game = games_instance.get_game([game_id])
+    cur_game = games_instance.get_game([game_id])[0]
     opp_combo = cur_game[5] if player_id == cur_game[2] else cur_game[4]
     
     player_combo = draw_combo(nft_tier, opp_combo)
+    
+    # update player hand
+    player_num = "player1" if player_id == cur_game[2] else "player2"
+    games_instance.update({"id": game_id, f"{player_num}_id": player_id, f"{player_num}_combo": player_combo})
+    
     
     send('draw_combo', json.dumps({"player_combo": player_combo}))
     
