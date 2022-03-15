@@ -1,13 +1,20 @@
 import json
 from flask import Flask, request
 from flask_socketio import SocketIO, join_room, leave_room, send, emit, rooms, ConnectionRefusedError
-import os
+
 from __init__ import TOTAL_PLAYERS, get_tiers_distribution
+
+from mysql_database.tournaments import Tournaments
 from mysql_database.players import Players
 from mysql_database.games import Games
 from mysql_database.num_players import Num_players
-from dotenv import load_dotenv
+
 from poker_logic.dealer import draw_combo
+from poker_logic.round_matching import get_rounnd_matching
+
+import os
+from dotenv import load_dotenv
+
 load_dotenv()
 
 app = Flask(__name__)
@@ -17,6 +24,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 players_instance = Players("mysql_database/db.ini")
 games_instance = Games("mysql_database/db.ini")
 num_players_instance = Num_players("mysql_database/db.ini")
+tournaments = Tournaments("mysql_database/db.ini")
 
 tiers_distribution = get_tiers_distribution()
 
@@ -40,9 +48,13 @@ def register_player(data: dict):
     num_players_instance.increase_players_num()
     
     if num_players_instance.get_cur_count() == TOTAL_PLAYERS:
-        # TODO start initiating graph for games and storing the games (shahin)
-        # inside games table to be used when the next round starts
-        pass
+        tournaments_id = tournaments.get_current_tournament_id()
+        round_players = players_instance.get_players(tournament_id=tournaments_id)
+
+        # TODO change this line to the correct round_id
+        round_id = ''
+        games = get_rounnd_matching(round_players)
+        games_instance.add_round_games(round_id, games)
     
 @socketio.on('log_in_round')
 def log_in_round(data: dict):

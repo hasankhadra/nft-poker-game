@@ -82,15 +82,24 @@ class Players:
 
         return new_id
     
-    def get_players(self, limit : int =10, winners=None):
+    def get_players(self, tournament_id: int = None, winners=None):
         conn, crsr = self.init()
-        query = "SELECT * FROM players"
-        
+        query = " SELECT * FROM players"
+
+        values = []
+
+        if not (tournament_id is None):
+            query += " WHERE tournament_id = %s"
+            values.append(tournament_id)
+
         if winners:
-            query += f" WHERE is_rail = false"
+            if tournament_id is not None:
+                query += " AND is_rail = false"
+            else:
+                query += " WHERE is_rail = false"
+            values.append(winners)
         
-        query += " limit %s"
-        crsr.execute(query, [limit])
+        crsr.execute(query, values)
         result = crsr.fetchall()
         
         conn.close()
@@ -116,7 +125,7 @@ class Players:
         
         conn.commit()
         conn.close()
-        
+
     def update(self, to_update_info: dict):
         """
         to_update_info: dict 

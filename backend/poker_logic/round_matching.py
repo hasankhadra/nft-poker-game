@@ -1,5 +1,5 @@
 
-from typing import Tuple
+from typing import List, Tuple
 
 import random
 from sortedcontainers import SortedSet
@@ -19,11 +19,11 @@ def fix_values(round_players: Tuple):
     return fixed_list
     
 
-def shuffle_matches(matches, num_actual_players):
-    if len(matches) < 2:
+def shuffle_games(games, num_actual_players):
+    if len(games) < 2:
         return
 
-    shuffled = copy.deepcopy(matches)
+    shuffled = copy.deepcopy(games)
     iternations = num_actual_players * 4
 
     for _ in range(iternations):
@@ -39,12 +39,16 @@ def shuffle_matches(matches, num_actual_players):
         
 
 
-def get_rounnd_matching(round_players: Tuple):
+def get_rounnd_matching(round_players: Tuple) -> List[Tuple]:
+    """
+    A method to get a round matching given the players in the round. The returned
+    value is a list of games, where each game is of the format (player1_id, player2_id).
+    """
     round_players = fix_values(round_players)
     num_actual_players = len(round_players)
 
     cur_players = SortedSet(round_players, key=lambda player: len(player))
-    matches = []
+    games = []
 
     while len(cur_players):
         max_player = cur_players.pop()
@@ -54,7 +58,7 @@ def get_rounnd_matching(round_players: Tuple):
             if num_nfts % 2:
                 raise Exception
             
-            matches.append(max_player[-1], max_player[-2])
+            games.append(max_player[-1], max_player[-2])
             
             max_player = max_player[:-2]
             if len(max_player) > 1:
@@ -66,7 +70,7 @@ def get_rounnd_matching(round_players: Tuple):
             match_player_1 = [max_player[0], *max_player[-1]]
             match_player_2 = [second_max_player[0], *second_max_player[-1]]
 
-            matches.append([match_player_1, match_player_2])
+            games.append([match_player_1, match_player_2])
 
             max_player = max_player[:-1]
             second_max_player = second_max_player[:-1]
@@ -76,5 +80,6 @@ def get_rounnd_matching(round_players: Tuple):
             if len(second_max_player) != 1:
                 cur_players.add(second_max_player)
 
-    matches = shuffle_matches(matches, num_actual_players)
-    return matches
+    games = shuffle_games(games, num_actual_players)
+    player_id_games = [(game[0][1], game[1][1]) for game in games]
+    return player_id_games

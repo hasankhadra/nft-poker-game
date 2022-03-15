@@ -1,3 +1,4 @@
+from typing import List, Tuple
 from mysql_database.connect import Connect
 
 class Games:
@@ -38,6 +39,29 @@ class Games:
         
         conn.commit()
         conn.close()
+
+    def add_round_games(self, round_id, games_info: List[Tuple]):
+        """
+        :param games_info: a list of tuples representing the games. Each game must 
+        be of the format (player1_id, player2_id).
+        """
+
+        for game_info in games_info:
+            assert len(game_info) == 2
+
+        one_row = """ (%s, %s, %s),"""
+
+        query = "INSERT INTO games (round_id, player1_id, player2_id) VALUES"
+        query += one_row * len(game_info)
+        query = query[:-1] + ';'
+
+        values = list(sum(game_info, ()))
+        conn, crsr = self.init()
+        crsr.execute(query, values)
+        
+        conn.commit()
+        conn.close()  
+
 
     def add_game(self, game_info: list):
         """
