@@ -14,6 +14,9 @@ def get_tiers_distribution():
 
     while len(tiers_distribution) < TOTAL_PLAYERS:
         tiers_distribution.append(random.choice(normal_tiers))
+    
+    random.shuffle(tiers_distribution)
+    
     return tiers_distribution
 
 

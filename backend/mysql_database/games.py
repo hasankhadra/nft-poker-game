@@ -1,14 +1,12 @@
-from connect import Connect
-
-from . import create_table_games
+from mysql_database.connect import Connect
 
 class Games:
     
-    editable_fields = ['winner_id', 'player1_combo', 'player2_combo', 'bad_beat']
+    editable_fields = ['winner_id', 'player1_hand', 'player2_hand', 'bad_beat']
 
-    def __init__(self):
+    def __init__(self, config_file):
         self.db = 'nft_poker_game'
-        self.config_file = 'db.ini'
+        self.config_file = config_file
         self.connect = Connect(self.config_file)
         if not self.is_games_exist():
             self.create_table()
@@ -40,14 +38,7 @@ class Games:
         
         conn.commit()
         conn.close()
-     
-    def create_table(self):
-        conn, crsr = self.init()
-        
-        crsr.execute(create_table_games)
-        conn.commit()
-        conn.close()
-    
+
     def add_game(self, game_info: list):
         """
         :param game_info: list containing [round_id, player1_id, player2_id]
@@ -72,19 +63,25 @@ class Games:
         conn.close()
         return retrieved
 
-    def get_games_from_round(self, round_id: int):
+    def get_games_from_round(self, game_info: list):
+        """
+        :param game_info: list containing [round_id]
+        """
         conn, crsr = self.init()
         
-        crsr.execute("SELECT * FROM games WHERE round_id = %s", [round_id])
+        crsr.execute("SELECT * FROM games WHERE round_id = %s", game_info)
         retrieved = crsr.fetchall()
         conn.commit()
         conn.close()
         return retrieved
     
-    def get_game(self, game_id):
+    def get_game(self, game_info: list):
+        """
+        :param game_info: list containing [game_id]
+        """
         conn, crsr = self.init()
 
-        crsr.execute(f"SELECT * FROM games WHERE id = %s;", [game_id])
+        crsr.execute(f"SELECT * FROM games WHERE id = %s;", game_info)
 
         retrieved = None
         try:
@@ -122,10 +119,7 @@ class Games:
         
 
         conn, crsr = self.init()
-
-        crsr.execute(f"UPDATE players SET {update_fields_expression} WHERE id = %s", values)
+        
+        crsr.execute(f"UPDATE games SET {update_fields_expression} WHERE id = %s", values)
         conn.commit()
         conn.close()
-        
-if __name__ == "__main__":
-    games_instance = Games()

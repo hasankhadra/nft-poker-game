@@ -114,5 +114,3 @@ def draw_combo(tier: str, opp_hand: Union[str, None]) -> str:
 
 if __name__ == "__main__":
     pass
-    # write_to_file()
-    # print(tier_to_combos.keys())

@@ -1,16 +1,13 @@
-from connect import Connect
-from datetime import datetime
-from tournaments import Tournaments
-
-from . import create_table_rounds
+from mysql_database.connect import Connect
+from mysql_database.tournaments import Tournaments
 
 class Rounds:
     
-    def __init__(self):
+    def __init__(self, config_file):
         self.db = 'nft_poker_game'
-        self.config_file = 'db.ini'
+        self.config_file = config_file
         self.connect = Connect(self.config_file)
-        self.tournaments = Tournaments()
+        self.tournaments = Tournaments(config_file)
         
     def init(self):
         return self.connect.init(self.db)
@@ -37,13 +34,6 @@ class Rounds:
         
         crsr.execute("DELETE FROM rounds")
         
-        conn.commit()
-        conn.close()
-     
-    def create_table(self):
-        conn, crsr = self.init()
-        
-        crsr.execute(create_table_rounds)
         conn.commit()
         conn.close()
      
@@ -75,12 +65,13 @@ class Rounds:
         :return: tuple of tuples containing all the rounds inside a specific tournament
         """
         conn, crsr = self.init()
-        res = crsr.execute("SELECT * from rounds WHERE tournament_id = %s", round_info)
+        crsr.execute("SELECT * from rounds WHERE tournament_id = %s", round_info)
+        result = crsr.fetchall()
         
         conn.close()
-        return res
+        return result
     
-    def get_next_round_id(self, round_info: list):
+    def get_round_id_by_round_num(self, round_info: list):
         """
         :param round_info: list 
         containing [tournament_id, round_num]
@@ -132,16 +123,3 @@ class Rounds:
         
         conn.commit()
         conn.close()
-
-if __name__ == "__main__":
-    rounds_instance = Rounds()
-    rounds_instance.delete_table()
-    # rounds_instance.create_table()
-    # rounds_instance.create_index()
-    
-    # rounds_instance.add_round(["address_1", "first last"])
-    # rounds_instance.update({"round_num": 3, "public_address": "address_1", "full_name": "fdsds last", "is_rail": True})
-
-"""
-"CREATE INDEX public_address_hash_index ON rounds (public_address);"
-"""
