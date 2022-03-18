@@ -23,6 +23,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 players_instance = Players(DB_CONFIG_FILE)
 games_instance = Games(DB_CONFIG_FILE)
+tournaments_instance = Tournaments(DB_CONFIG_FILE)
 num_players_instance = Num_players(DB_CONFIG_FILE)
 tournaments = Tournaments(DB_CONFIG_FILE)
 
@@ -38,6 +39,7 @@ def register_player(data: dict):
         username: str
     }
     """
+    
     if num_players_instance.get_cur_count() == TOTAL_PLAYERS:
         raise ConnectionRefusedError('There is no room left for new players!')
     
@@ -56,8 +58,47 @@ def register_player(data: dict):
         games = get_rounnd_matching(round_players)
         games_instance.add_round_games(round_id, games)
     
+@socketio.on("nfts_info")
+def nfts_info(data: dict):
+    """
+    return a list of nfts (if any) with their metadata
+    :param data: dict containing
+    {
+        public_address: str
+    }
+    :return: a dict 
+    {
+        "ntfs": list
+    }
+    where each element in the list is a dictionary
+    """
+    
+    public_address = data["public_address"]
+    
+    nfts_json_format = players_instance.get_player_by_public_address([public_address], get_json_format=True)
+    #TODO for next tournaments check tournament_id
+    socketio.emit("nfts_info", json.dumps({"nfts": nfts_json_format}))
+    
+@socketio.on("get_players")
+def get_players():
+    """
+    return all the players in the curernt tournament
+    :return: a dict 
+    {
+        "players": list
+    }
+    where each element in the list is a dictionary
+    """
+    
+    tournament_id = tournaments_instance.get_current_tournament_id()
+    
+    players_json_format = players_instance.get_players(tournament_id=tournament_id, get_json_format=True)
+    
+    socketio.emit("get_players", json.dumps({"players": players_json_format}))
+    
 @socketio.on('log_in_round')
 def log_in_round(data: dict):
+    
     # TODO check if all nfts are still owned by this user.
     pass
     
@@ -113,7 +154,21 @@ def draw_combo(data):
     player_num = "player1" if player_id == cur_game[2] else "player2"
     games_instance.update({"id": game_id, f"{player_num}_id": player_id, f"{player_num}_combo": player_combo})
     
-    send('draw_combo', json.dumps({"player_combo": player_combo}))
+    socketio.emit('draw_combo', json.dumps({"player_combo": player_combo}))
+
+@socketio.on("draw_the_flops")
+def draw_the_flops(data: dict):
+    """
+    data: dict
+    {
+        game_id: int
+    }
+    """
+    game_id = data["game_id"]
+    
+    games_instance.get_game([game_id])
+    
+    
     
     
 

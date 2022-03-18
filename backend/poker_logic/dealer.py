@@ -3,6 +3,8 @@ from poker import Suit, Rank
 from functools import reduce
 from typing import Union
 import json
+import random
+
 
 tier_to_combos = {}
 
@@ -97,7 +99,6 @@ def draw_combo(tier: str, opp_hand: Union[str, None]) -> str:
     :return: string denoting a combo for the given tier (e.x. "Ah5c")
     """
     
-    import random
     with open('tiers_hands.json') as json_file:
         tier_to_combos = json.load(json_file)
     
@@ -114,5 +115,17 @@ def draw_combo(tier: str, opp_hand: Union[str, None]) -> str:
     
     return combo
 
+def draw_the_flops(first_player_combo: str, second_player_combo: str) -> str:
+    the_flops = ""
+    count = 0
+    while count < 5:
+        card = random.choice(tier_to_combos["tier_1"])
+        if card == first_player_combo or card == second_player_combo or card in the_flops:
+            continue
+        count += 1
+        the_flops += card + ","
+    the_flops = the_flops[:-1]
+    return the_flops
+    
 if __name__ == "__main__":
     pass

@@ -1,3 +1,4 @@
+import json
 from mysql_database.connect import Connect
 from mysql_database.tournaments import Tournaments
 from mysql_database.rounds import Rounds
@@ -82,7 +83,13 @@ class Players:
 
         return new_id
     
-    def get_players(self, tournament_id: int = None, winners=None):
+    def _get_json_format(self, row_headers, results):
+        json_data = []
+        for row in results:
+            json_data.append(dict(zip(row_headers, row)))
+        return json.dumps(json_data)
+    
+    def get_players(self, tournament_id: int = None, winners=None, get_json_format=None):
         conn, crsr = self.init()
         query = " SELECT * FROM players"
 
@@ -100,10 +107,14 @@ class Players:
             values.append(winners)
         
         crsr.execute(query, values)
-        result = crsr.fetchall()
+        results = crsr.fetchall()
+        
+        if get_json_format:
+            row_headers=[item[0] for item in crsr.description]
+            results = self._get_json_format(row_headers, results)
         
         conn.close()
-        return result
+        return results
     
     def get_player_by_id(self, player_info: list):
         """
@@ -116,6 +127,22 @@ class Players:
         
         conn.close()
         return result
+    
+    def get_player_by_public_address(self, player_info: list, get_json_format=None):
+        """
+        :param player_info: list containing [public_address]
+        """
+        conn, crsr = self.init()
+        
+        crsr.execute("SELECT * FROM players WHERE public_address = %s", player_info)
+        results = crsr.fetchall()
+        
+        if get_json_format:
+            row_headers=[item[0] for item in crsr.description]
+            results = self._get_json_format(row_headers, results)
+        
+        conn.close()
+        return results
     
     def transfer_nft_ownership(self, from_public_address: str, to_public_address: str, nft_id: str):
         conn, crsr = self.init()
