@@ -3,7 +3,7 @@ from mysql_database.connect import Connect
 
 class Games:
     
-    editable_fields = ['winner_id', 'player1_hand', 'player2_hand', 'bad_beat']
+    editable_fields = ['winner_id', 'player1_hand', 'player2_hand', 'bad_beat', 'flops']
 
     def __init__(self, config_file):
         self.db = 'nft_poker_game'
@@ -46,8 +46,8 @@ class Games:
         be of the format (player1_id, player2_id).
         """
 
-        for game_info in games_info:
-            assert len(game_info) == 2
+        for element in games_info:
+            assert len(element) == 2
 
         one_row = """ (%s, %s, %s),"""
 
@@ -55,6 +55,7 @@ class Games:
         query += one_row * len(game_info)
         query = query[:-1] + ';'
 
+        game_info = [(round_id, *element) for element in games_info]
         values = list(sum(game_info, ()))
         conn, crsr = self.init()
         crsr.execute(query, values)
