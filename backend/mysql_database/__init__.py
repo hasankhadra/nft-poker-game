@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS games (
     player2_id INT NOT NULL,
     player1_combo VARCHAR(20),
     player2_combo VARCHAR(20),
+    flops VARCHAR(32),
     winner_id INT,
     bad_beat BOOLEAN,
     FOREIGN KEY (round_id) REFERENCES rounds(id),
