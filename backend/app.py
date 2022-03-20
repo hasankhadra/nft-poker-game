@@ -4,7 +4,6 @@ from flask_socketio import SocketIO, join_room, leave_room, rooms, ConnectionRef
 
 from __init__ import TOTAL_PLAYERS, get_tiers_distribution, DB_CONFIG_FILE
 
-
 from mysql_database.tournaments import Tournaments
 from mysql_database.rounds import Rounds
 from mysql_database.games import Games
@@ -13,6 +12,7 @@ from mysql_database.num_players import Num_players
 
 from poker_logic.dealer import draw_combo, draw_the_flops
 from poker_logic.round_matching import get_rounnd_matching
+from poker_logic.game import play
 
 import os
 from dotenv import load_dotenv
@@ -168,6 +168,42 @@ def stake_nft(data: dict):
     
     socketio.emit("stake_nft", json.dumps({"response": "OK"}))    
 
+@socketio.on("unstake_nft")
+def unstake_nft(data: dict):
+    """
+    transfer nft ownership to player
+    data: dict
+    {
+        public_address: str, 
+        nft_id: str,
+        player_id: int
+    }
+    """
+    
+    public_address = data["public_address"]
+    nft_id = data["nft_id"]
+    player_id = data["player_id"]
+    
+    player_json = players_instance.get_player_by(by={"public_address": public_address,
+                                                     "nft_id": nft_id,
+                                                     "player_id": player_id}, 
+                                                 get_json_format=True)
+
+    player_json = json.loads(player_json)
+    
+    if len(player_json) == 0:
+        socketio.emit("unstake_nft", json.dumps({"response": "No such player with nft"}))
+        raise ConnectionRefusedError("No such player with nft")
+    
+    # TODO blockchain - transfer ownership of nft to player
+    try:
+        players_instance.update({"id": player_id, "staked": False})
+    except Exception as e:
+        socketio.emit("unstake_nft", json.dumps({"response": e}))
+
+    
+    socketio.emit("unstake_nft", json.dumps({"response": "OK"}))    
+
 @socketio.on("draw_combo")
 def draw_combo(data):
     """
@@ -220,6 +256,37 @@ def draw_the_flops(data: dict):
     the_flops = the_flops.split(",")
     
     socketio.emit("draw_the_flops", json.dumps({"the_flops": the_flops}))
+
+@socketio.on("play_game")
+def play_game(data: dict):
+    """
+    return the result of the game between two players
+    :param data: dict
+    {
+        game_id: int
+    }
+    :return: dict
+    {
+        winner: int (1 for first_player, 2 for second player, -1 for draw),
+        best_hand_1: list,
+        best_hand_1_name: str,
+        best_hand_2: list,
+        best_hand_2_name: str,
+        bad_beat: bool (True if the loser has a hand better than),
+        tie_with_hands: bool
+    }
+    """  
+    game_id = data["game_id"]
+    
+    game = json.loads(games_instance.get_game([game_id], get_json_format=True))
+    
+    player1_combo = game["player1_combo"]
+    player2_combo = game["player2_combo"]
+    the_flops = game["flops"]
+    
+    game_result = play(player1_combo, player2_combo, the_flops)
+    
+    socketio.emit("play_game", game_result)
     
 
 if __name__ == "__main__":
