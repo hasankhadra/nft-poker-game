@@ -1,5 +1,7 @@
 from mysql_database.connect import Connect
 from mysql_database.tournaments import Tournaments
+import json 
+from datetime import datetime
 
 class Rounds:
     
@@ -46,7 +48,7 @@ class Rounds:
         # add tournament_id 
         tournament_id = self.tournaments.get_current_tournament_id()
         
-        round_info += [tournament_id] # TODO: add tournament_id
+        round_info += [tournament_id]
         
         conn, crsr = self.init()
         crsr.execute("""INSERT INTO rounds (round_num, start_time, end_time, tournament_id) 
@@ -59,18 +61,80 @@ class Rounds:
 
         return new_id
     
-    def get_rounds_by_tournament_id(self, round_info: list):
+    def get_cur_round(self):
         """
-        :param round_info: list containing [tournament_id]
-        :return: tuple of tuples containing all the rounds inside a specific tournament
+        returns the current active round. In case no round is active now,
+        it returns the next upcoming round.
         """
         conn, crsr = self.init()
-        crsr.execute("SELECT * from rounds WHERE tournament_id = %s", round_info)
-        result = crsr.fetchall()
+        
+        tournament_id = self.tournaments.get_current_tournament_id()
+        
+        crsr.execute("SELECT * FROM rounds WHERE tournament_id = %s", [tournament_id])
+        
+        results = crsr.fetchall()
+        
+        results = json.loads(self._get_json_format(crsr, results))
         
         conn.close()
-        return result
+        
+        cur_round_index = -1
+        
+        for index in range(len(results)):
+            result = results[index]
+            end_time = datetime.strptime(result["end_time"], '%Y-%m-%d %H:%M:%S')
+            start_time = datetime.strptime(result["start_time"], '%Y-%m-%d %H:%M:%S')
+            
+            cur_time = datetime.now()
+            
+            if end_time < cur_time:
+                continue
+            
+            if cur_round_index == -1:
+                cur_round_index = index
+                continue
+            
+            if end_time < datetime.strptime(results[cur_round_index]["start_time"], '%Y-%m-%d %H:%M:%S'):
+                cur_round_index = index
+            
+        return results[cur_round_index]
     
+    def _get_json_format(self, crsr, results):
+        row_headers=[item[0] for item in crsr.description]
+        json_data = []
+        for row in results:
+            json_data.append(dict(zip(row_headers, row)))
+        return json.dumps(json_data, default=str)
+    
+    def get_rounds_by(self, by: dict, get_json_format=None):
+        """
+        :param by: dict containing the conditions for the select statement
+        where the key is the name of the column and the value is the desired value in
+        the rows
+        """
+        
+        assert len(by.keys() > 0)
+        
+        conn, crsr = self.init()
+        
+        query = "SELECT * FROM rounds WHERE"
+        conditions = []
+        
+        for item, value in by.items():
+            query += f" {item} = %s AND"
+            conditions.append(value)
+        
+        query = query[:-3]
+        
+        crsr.execute(query, conditions)
+        results = crsr.fetchall()
+        
+        if get_json_format:
+            results = self._get_json_format(crsr, results)
+        
+        conn.close()
+        return results
+  
     def get_round_id_by_round_num(self, round_info: list):
         """
         :param round_info: list 

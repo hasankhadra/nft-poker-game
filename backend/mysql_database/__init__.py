@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS rounds (
     id INT AUTO_INCREMENT PRIMARY KEY, 
     tournament_id INT NOT NULL,
     round_num INT NOT NULL,
-    start_time DATE NOT NULL,
-    end_time DATE NOT NULL,
+    start_time DATETIME NOT NULL,
+    end_time DATETIME NOT NULL,
     FOREIGN KEY (tournament_id) REFERENCES tournaments(id));
 """
 
@@ -43,10 +43,14 @@ CREATE TABLE IF NOT EXISTS players (
     public_address varchar(255) NOT NULL,
     username VARCHAR(255) NOT NULL, 
     round_id INT NOT NULL,
+    round_num INT NOT NULL,
+    tournament_id INT NOT NULL,
     nft_tier VARCHAR(40),
     is_rail BOOLEAN NOT NULL,
+    staked BOOLEAN NOT NULL,
     bounty double NOT NULL,
-    FOREIGN KEY (round_id) REFERENCES rounds(id));
+    FOREIGN KEY (round_id) REFERENCES rounds(id),
+    FOREIGN KEY (tournament_id) REFERENCES tournaments(id));
 """
 
 create_table_total_players = """

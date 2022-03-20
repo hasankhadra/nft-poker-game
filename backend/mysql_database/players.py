@@ -68,13 +68,13 @@ class Players:
         """
 
         tournament_id = self.tournaments.get_current_tournament_id()
-        round_id = self.rounds.get_round_id_by_round_num([tournament_id, 3])
+        round_id = self.rounds.get_round_id_by_round_num([tournament_id, 1])
         
-        player_info += [round_id, False, 0.0]
+        player_info += [round_id, False, 0.0, tournament_id, 1, False]
         
         conn, crsr = self.init()
-        crsr.execute("""INSERT INTO players (nft_id, public_address, username, nft_tier, round_id, is_rail, bounty) 
-                     VALUES (%s, %s, %s, %s, %s, %s, %s)""", player_info)
+        crsr.execute("""INSERT INTO players (nft_id, public_address, username, nft_tier, round_id, is_rail, bounty, tournament_id, round_num, staked) 
+                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""", player_info)
         
         new_id = crsr.lastrowid
         
@@ -83,7 +83,8 @@ class Players:
 
         return new_id
     
-    def _get_json_format(self, row_headers, results):
+    def _get_json_format(self, crsr, results):
+        row_headers=[item[0] for item in crsr.description]
         json_data = []
         for row in results:
             json_data.append(dict(zip(row_headers, row)))
@@ -110,36 +111,36 @@ class Players:
         results = crsr.fetchall()
         
         if get_json_format:
-            row_headers=[item[0] for item in crsr.description]
-            results = self._get_json_format(row_headers, results)
+            results = self._get_json_format(crsr, results)
         
         conn.close()
         return results
-    
-    def get_player_by_id(self, player_info: list):
+   
+    def get_player_by(self, by: dict, get_json_format=None):
         """
-        :param player_info: list containing [id]
+        :param by: dict containing the conditions for the select statement
+        where the key is the name of the column and the value is the desired value in
+        the rows
         """
+        
+        assert len(by.keys() > 0)
+        
         conn, crsr = self.init()
         
-        crsr.execute("SELECT * FROM players WHERE id = %s", player_info)
-        result = crsr.fetchall()
+        query = "SELECT * FROM players WHERE"
+        conditions = []
         
-        conn.close()
-        return result
-    
-    def get_player_by_public_address(self, player_info: list, get_json_format=None):
-        """
-        :param player_info: list containing [public_address]
-        """
-        conn, crsr = self.init()
+        for item, value in by.items():
+            query += f" {item} = %s AND"
+            conditions.append(value)
         
-        crsr.execute("SELECT * FROM players WHERE public_address = %s", player_info)
+        query = query[:-3]
+        
+        crsr.execute(query, conditions)
         results = crsr.fetchall()
         
         if get_json_format:
-            row_headers=[item[0] for item in crsr.description]
-            results = self._get_json_format(row_headers, results)
+            results = self._get_json_format(crsr, results)
         
         conn.close()
         return results

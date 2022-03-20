@@ -43,12 +43,13 @@ function Register() {
             setUsernameError("Username can't be empty!");
             return;
         }
+        setUsernameError('')
         const payload = {
             public_address: address,
             username: username
         }
         socket.emit("register", payload);
-    }, []);
+    }, [username, usernameError]);
 
     return (
         <div className="App">
@@ -65,7 +66,7 @@ function Register() {
                         />
                         <span style={{ color: "red" }}>{usernameError}</span>
                         <hr/>
-                        <button type="submit" class="registerbtn"> Register </button>
+                        <button type="submit" className="registerbtn"> Register </button>
                     </form>
                 </div>
                 : "Please install MetaMask"}

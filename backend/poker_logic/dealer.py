@@ -5,6 +5,8 @@ from typing import Union
 import json
 import random
 
+card_deck = [[rank + suit for suit in "hdsc"] for rank in "23456789TJQKA"]
+card_deck = reduce(lambda x,y :x+y, [cards for cards in card_deck])
 
 tier_to_combos = {}
 
@@ -119,13 +121,13 @@ def draw_the_flops(first_player_combo: str, second_player_combo: str) -> str:
     the_flops = ""
     count = 0
     while count < 5:
-        card = random.choice(tier_to_combos["tier_1"])
-        if card == first_player_combo or card == second_player_combo or card in the_flops:
+        card = random.choice(card_deck)
+        if card in first_player_combo or card in second_player_combo or card in the_flops:
             continue
         count += 1
         the_flops += card + ","
     the_flops = the_flops[:-1]
     return the_flops
-    
+     
 if __name__ == "__main__":
     pass
