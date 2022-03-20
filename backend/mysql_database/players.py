@@ -74,7 +74,7 @@ class Players:
         
         conn, crsr = self.init()
         crsr.execute("""INSERT INTO players (nft_id, public_address, username, nft_tier, round_id, is_rail, bounty, tournament_id, round_num, staked) 
-                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""", player_info)
+                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""", player_info)
         
         new_id = crsr.lastrowid
         
