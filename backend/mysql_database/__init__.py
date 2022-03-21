@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS players (
     FOREIGN KEY (tournament_id) REFERENCES tournaments(id));
 """
 
-create_table_total_players = """
+create_table_num_players = """
 CREATE TABLE IF NOT EXISTS num_players (
     tournament_id INT NOT NULL,
     count INT NOT NULL,
@@ -76,7 +76,7 @@ crsr.execute(create_table_tournaments)
 crsr.execute(create_table_rounds)
 crsr.execute(create_table_players)
 crsr.execute(create_table_games)
-crsr.execute(create_table_total_players)
+crsr.execute(create_table_num_players)
 
 
 # creating indexes

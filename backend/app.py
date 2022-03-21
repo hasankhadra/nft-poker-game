@@ -112,7 +112,9 @@ def get_players():
     
     players_json_format = players_instance.get_players(tournament_id=tournament_id, get_json_format=True)
     
-    socketio.emit("get_players", json.dumps({"players": players_json_format}))
+    print(players_json_format)
+
+    socketio.emit("get_players", {"players": players_json_format})
     
 @socketio.on('log_in_round')
 def log_in_round(data: dict):

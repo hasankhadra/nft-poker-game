@@ -35,6 +35,18 @@ class Num_players:
         conn.commit()
         conn.close()
 
+    def add_row(self, info: list):
+        """
+        :param info: list containing [tournament_id]
+        """
+        conn, crsr = self.init()
+
+        crsr.execute("INSERT INTO num_players (tournament_id, count) VALUES (%s, 0)", info)
+
+        conn.commit()
+        conn.close()
+
+    
     def get_cur_count(self):
         """
         returns the number of already registered players in the current tournament
