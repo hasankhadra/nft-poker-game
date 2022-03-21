@@ -1,9 +1,9 @@
 import json
 from flask import Flask, request
 from flask_socketio import SocketIO, join_room, leave_room, rooms, ConnectionRefusedError
+from apscheduler.schedulers.background import BackgroundScheduler
 
 from __init__ import TOTAL_PLAYERS, get_tiers_distribution, DB_CONFIG_FILE
-
 
 from mysql_database.tournaments import Tournaments
 from mysql_database.rounds import Rounds
@@ -12,7 +12,8 @@ from mysql_database.players import Players
 from mysql_database.num_players import Num_players
 
 from poker_logic.dealer import draw_combo, draw_the_flops
-from poker_logic.round_matching import get_rounnd_matching
+from poker_logic.round_matching import get_round_matching
+from poker_logic.game import play
 
 import os
 from dotenv import load_dotenv
@@ -30,6 +31,19 @@ players_instance = Players(DB_CONFIG_FILE)
 num_players_instance = Num_players(DB_CONFIG_FILE)
 
 tiers_distribution = get_tiers_distribution()
+
+def schedule_round():
+    # TODO
+    pass
+
+if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+    pass
+    # TODO set all the rounds
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(func=schedule_round, trigger="interval", seconds=10)
+    scheduler.start()
+
+# TODO security check (probably event) to prevent random people from entering games rooms 
 
 @socketio.on("register")
 def register(data: dict):
@@ -58,9 +72,9 @@ def register(data: dict):
         round_players = players_instance.get_players(tournament_id=tournaments_id)
 
         round_id = rounds_instance.get_cur_round()["id"]
-        games = get_rounnd_matching(round_players)
+        games = get_round_matching(round_players)
         games_instance.add_round_games(round_id, games)
-    
+        
 @socketio.on("nfts_info")
 def nfts_info(data: dict):
     """
@@ -128,7 +142,7 @@ def on_leave(data):
     leave_room(data['room'])
 
 @socketio.on("get_rooms")
-def get_rooms():
+def get_rooms(data: dict):
     # TODO return all rooms this player will join during this round
     pass
 
@@ -167,6 +181,42 @@ def stake_nft(data: dict):
 
     
     socketio.emit("stake_nft", json.dumps({"response": "OK"}))    
+
+@socketio.on("unstake_nft")
+def unstake_nft(data: dict):
+    """
+    transfer nft ownership to player
+    data: dict
+    {
+        public_address: str, 
+        nft_id: str,
+        player_id: int
+    }
+    """
+    
+    public_address = data["public_address"]
+    nft_id = data["nft_id"]
+    player_id = data["player_id"]
+    
+    player_json = players_instance.get_player_by(by={"public_address": public_address,
+                                                     "nft_id": nft_id,
+                                                     "player_id": player_id}, 
+                                                 get_json_format=True)
+
+    player_json = json.loads(player_json)
+    
+    if len(player_json) == 0:
+        socketio.emit("unstake_nft", json.dumps({"response": "No such player with nft"}))
+        raise ConnectionRefusedError("No such player with nft")
+    
+    # TODO blockchain - transfer ownership of nft to player
+    try:
+        players_instance.update({"id": player_id, "staked": False})
+    except Exception as e:
+        socketio.emit("unstake_nft", json.dumps({"response": e}))
+
+    
+    socketio.emit("unstake_nft", json.dumps({"response": "OK"}))    
 
 @socketio.on("draw_combo")
 def draw_combo(data):
@@ -220,6 +270,68 @@ def draw_the_flops(data: dict):
     the_flops = the_flops.split(",")
     
     socketio.emit("draw_the_flops", json.dumps({"the_flops": the_flops}))
+
+@socketio.on("play_game")
+def play_game(data: dict):
+    """
+    return the result of the game between two players
+    :param data: dict
+    {
+        game_id: int
+    }
+    :return: dict
+    {
+        winner: int (1 for first_player, 2 for second player, -1 for draw),
+        player1_id: {
+            best_hand: list,
+            best_hand_name: str,   
+        }
+        player2_id: {
+            best_hand: list,
+            best_hand_name: str,   
+        }
+        bad_beat: bool (True if the loser has a hand better than "AAAKK"),
+        tie_with_hands: bool
+    }
+    """  
+    game_id = data["game_id"]
+    
+    game = json.loads(games_instance.get_game([game_id], get_json_format=True))
+    
+    player1_combo = game["player1_combo"]
+    player2_combo = game["player2_combo"]
+    the_flops = game["flops"]
+    
+    game_result = json.loads(play(player1_combo, player2_combo, the_flops))
+    
+    player1_dict = {
+        game["player1_id"]: {
+            "best_hand": game_result["best_hand_1"],
+            "best_hand_name": game_result["best_hand_1_name"]
+        }
+    }
+    
+    game_result.update(player1_dict)
+    
+    player2_dict = {
+        game["player2_id"]: {
+            "best_hand": game_result["best_hand_2"],
+            "best_hand_name": game_result["best_hand_2_name"]
+        }
+    }
+    
+    game_result.update(player2_dict)
+
+    del game_result["best_hand_1"]
+    del game_result["best_hand_2"]
+    del game_result["best_hand_1_name"]
+    del game_result["best_hand_2_name"]
+    
+    games_instance.update({})
+    
+    # TODO handle the draw case
+    
+    socketio.emit("play_game", json.dumps(game_result))
     
 
 if __name__ == "__main__":

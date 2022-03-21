@@ -24,9 +24,9 @@ def shuffle_games(games, num_actual_players):
         return
 
     shuffled = copy.deepcopy(games)
-    iternations = num_actual_players * 4
+    iterations = num_actual_players * 4
 
-    for _ in range(iternations):
+    for _ in range(iterations):
         game1, game2 = random.sample(shuffled, 2)
         unique_players = set([game1[0][0], game1[1][0], game2[0][0], game2[1][0]])
 
@@ -38,8 +38,7 @@ def shuffle_games(games, num_actual_players):
     return shuffled
         
 
-
-def get_rounnd_matching(round_players: Tuple) -> List[Tuple]:
+def get_round_matching(round_players: Tuple) -> List[Tuple]:
     """
     A method to get a round matching given the players in the round. The returned
     value is a list of games, where each game is of the format (player1_id, player2_id).
@@ -58,7 +57,7 @@ def get_rounnd_matching(round_players: Tuple) -> List[Tuple]:
             if num_nfts % 2:
                 raise Exception
             
-            games.append(max_player[-1], max_player[-2])
+            games.append([[max_player[0], *max_player[-1]], [max_player[0], *max_player[-2]]])
             
             max_player = max_player[:-2]
             if len(max_player) > 1:
@@ -75,9 +74,9 @@ def get_rounnd_matching(round_players: Tuple) -> List[Tuple]:
             max_player = max_player[:-1]
             second_max_player = second_max_player[:-1]
 
-            if len(max_player) != 1:
+            if len(max_player) > 1:
                 cur_players.add(max_player)
-            if len(second_max_player) != 1:
+            if len(second_max_player) > 1:
                 cur_players.add(second_max_player)
 
     games = shuffle_games(games, num_actual_players)

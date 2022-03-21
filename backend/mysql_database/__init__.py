@@ -1,6 +1,10 @@
 from mysql_database.connect import Connect
 from MySQLdb import OperationalError
 
+
+# TODO add a new table for draw games logs
+
+
 create_table_tournaments = """
 CREATE TABLE IF NOT EXISTS tournaments (
     id INT AUTO_INCREMENT PRIMARY KEY, 

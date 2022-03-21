@@ -1,5 +1,7 @@
 from typing import List, Tuple
 from mysql_database.connect import Connect
+import json 
+
 
 class Games:
     
@@ -87,7 +89,14 @@ class Games:
         conn.commit()
         conn.close()
         return retrieved
-
+    
+    def _get_json_format(self, crsr, results):
+        row_headers=[item[0] for item in crsr.description]
+        json_data = []
+        for row in results:
+            json_data.append(dict(zip(row_headers, row)))
+        return json.dumps(json_data)
+   
     def get_games_from_round(self, game_info: list):
         """
         :param game_info: list containing [round_id]
@@ -100,22 +109,21 @@ class Games:
         conn.close()
         return retrieved
     
-    def get_game(self, game_info: list):
+    def get_game(self, game_info: list, get_json_format=None):
         """
         :param game_info: list containing [game_id]
         """
         conn, crsr = self.init()
 
         crsr.execute(f"SELECT * FROM games WHERE id = %s;", game_info)
-
-        retrieved = None
-        try:
-            retrieved =  crsr.fetchall()[0]
-        except:
-            pass
-        conn.commit()
+        
+        results = crsr.fetchall()
+        
+        if get_json_format:
+            results = self._get_json_format(crsr, results)
+        
         conn.close()
-        return retrieved
+        return results
 
     def update(self, to_update_info: dict):
         """
