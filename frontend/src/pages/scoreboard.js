@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback, useContext } from "react";
 
 import { getAddress } from '../utils/metamaskAuth';
 import { SocketContext } from '../contexts/socket';
-import {PlayersTable} from '../components/playersTable'
+import { PlayersTable } from '../components/playersTable'
 
 function Scoreboard() {
 
@@ -29,15 +29,18 @@ function Scoreboard() {
     useEffect(() => {
         // socket.emit("get_players");
         const newPlayers = [
-            {id: 1, username: "hasan", bounty: 10},
-            {id: 2, username: "hash", bounty: 100},
-            {id: 3, username: "igor", bounty: 35}
+            {id: 1, username: "hasan", bounty: 10, Round_number: 2},
+            {id: 2, username: "hash", bounty: 100, Round_number: 1},
+            {id: 3, username: "igor", bounty: 35, Round_number: 3}
         ]
+
         setPlayers(newPlayers);
     }, []);
 
     const comparePlayers = (player1, player2) => {
-        return 0;
+        if(player2.Round_number - player1.Round_number == 0)
+            return player2.bounty - player1.bounty;
+        return player2.Round_number - player1.Round_number;
     }
 
     const getPlayersListener = useCallback(async (response) => {
