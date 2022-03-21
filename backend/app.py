@@ -290,7 +290,7 @@ def play_game(data: dict):
             best_hand: list,
             best_hand_name: str,   
         }
-        bad_beat: bool (True if the loser has a hand better than),
+        bad_beat: bool (True if the loser has a hand better than "AAAKK"),
         tie_with_hands: bool
     }
     """  
