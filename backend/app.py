@@ -302,7 +302,14 @@ def play_game(data: dict):
     player2_combo = game["player2_combo"]
     the_flops = game["flops"]
     
-    game_result = json.loads(play(player1_combo, player2_combo, the_flops))
+    game_result: dict = json.loads(play(player1_combo, player2_combo, the_flops))
+    
+    if game_result["winner"] != -1:
+        games_instance.update({
+            "id": game["id"], 
+            "winner_id": game["player1_id"] if game_result["winner"] == 1 else game["player2_id"], 
+            "bad_beat": True if game_result.get("bad_beat") else False
+        })
     
     player1_dict = {
         game["player1_id"]: {
@@ -326,8 +333,6 @@ def play_game(data: dict):
     del game_result["best_hand_2"]
     del game_result["best_hand_1_name"]
     del game_result["best_hand_2_name"]
-    
-    games_instance.update({})
     
     # TODO handle the draw case
     
