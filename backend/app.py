@@ -43,6 +43,8 @@ if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     scheduler.add_job(func=schedule_round, trigger="interval", seconds=10)
     scheduler.start()
 
+# TODO security check (probably event) to prevent random people from entering games rooms 
+
 @socketio.on("register")
 def register(data: dict):
     """
@@ -324,6 +326,10 @@ def play_game(data: dict):
     del game_result["best_hand_2"]
     del game_result["best_hand_1_name"]
     del game_result["best_hand_2_name"]
+    
+    games_instance.update({})
+    
+    # TODO handle the draw case
     
     socketio.emit("play_game", json.dumps(game_result))
     
