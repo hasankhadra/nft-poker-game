@@ -1,6 +1,7 @@
 import json
 from flask import Flask, request
 from flask_socketio import SocketIO, join_room, leave_room, rooms, ConnectionRefusedError
+from apscheduler.schedulers.background import BackgroundScheduler
 
 from __init__ import TOTAL_PLAYERS, get_tiers_distribution, DB_CONFIG_FILE
 
@@ -11,7 +12,7 @@ from mysql_database.players import Players
 from mysql_database.num_players import Num_players
 
 from poker_logic.dealer import draw_combo, draw_the_flops
-from poker_logic.round_matching import get_rounnd_matching
+from poker_logic.round_matching import get_round_matching
 from poker_logic.game import play
 
 import os
@@ -30,6 +31,17 @@ players_instance = Players(DB_CONFIG_FILE)
 num_players_instance = Num_players(DB_CONFIG_FILE)
 
 tiers_distribution = get_tiers_distribution()
+
+def schedule_round():
+    # TODO
+    pass
+
+if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+    pass
+    # TODO set all the rounds
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(func=schedule_round, trigger="interval", seconds=10)
+    scheduler.start()
 
 @socketio.on("register")
 def register(data: dict):
@@ -58,9 +70,9 @@ def register(data: dict):
         round_players = players_instance.get_players(tournament_id=tournaments_id)
 
         round_id = rounds_instance.get_cur_round()["id"]
-        games = get_rounnd_matching(round_players)
+        games = get_round_matching(round_players)
         games_instance.add_round_games(round_id, games)
-    
+        
 @socketio.on("nfts_info")
 def nfts_info(data: dict):
     """
@@ -128,7 +140,7 @@ def on_leave(data):
     leave_room(data['room'])
 
 @socketio.on("get_rooms")
-def get_rooms():
+def get_rooms(data: dict):
     # TODO return all rooms this player will join during this round
     pass
 
@@ -268,10 +280,14 @@ def play_game(data: dict):
     :return: dict
     {
         winner: int (1 for first_player, 2 for second player, -1 for draw),
-        best_hand_1: list,
-        best_hand_1_name: str,
-        best_hand_2: list,
-        best_hand_2_name: str,
+        player1_id: {
+            best_hand: list,
+            best_hand_name: str,   
+        }
+        player2_id: {
+            best_hand: list,
+            best_hand_name: str,   
+        }
         bad_beat: bool (True if the loser has a hand better than),
         tie_with_hands: bool
     }
@@ -284,9 +300,32 @@ def play_game(data: dict):
     player2_combo = game["player2_combo"]
     the_flops = game["flops"]
     
-    game_result = play(player1_combo, player2_combo, the_flops)
+    game_result = json.loads(play(player1_combo, player2_combo, the_flops))
     
-    socketio.emit("play_game", game_result)
+    player1_dict = {
+        game["player1_id"]: {
+            "best_hand": game_result["best_hand_1"],
+            "best_hand_name": game_result["best_hand_1_name"]
+        }
+    }
+    
+    game_result.update(player1_dict)
+    
+    player2_dict = {
+        game["player2_id"]: {
+            "best_hand": game_result["best_hand_2"],
+            "best_hand_name": game_result["best_hand_2_name"]
+        }
+    }
+    
+    game_result.update(player2_dict)
+
+    del game_result["best_hand_1"]
+    del game_result["best_hand_2"]
+    del game_result["best_hand_1_name"]
+    del game_result["best_hand_2_name"]
+    
+    socketio.emit("play_game", json.dumps(game_result))
     
 
 if __name__ == "__main__":
