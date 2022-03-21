@@ -1,0 +1,43 @@
+.footer{
+    /* margin-top: 1rem; */
+    /* padding: 1rem; */
+    /*position: static; */
+    bottom: 0;
+    left: 0;
+    height: 6%;
+    width: 100%;
+    background-color: "#25262A";
+
+    font-family: 'Josefin Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    color: #FFFFFF;
+
+    display:flex; 
+    flex-direction: row; 
+    justify-content: center; 
+    align-items: center;
+}
+
+.copyrights {
+    margin-right: 200px;
+    left: 0;
+}
+
+.privacy-service {
+    margin-left: 100px;
+    display:flex; 
+    flex-direction: row; 
+    justify-content: center; 
+    align-items: center;
+}
+
+.privacy-service a{
+    font-family: 'Josefin Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    color: #FFFFFF;
+    margin: 0 10px;
+}

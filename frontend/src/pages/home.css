@@ -1,0 +1,8 @@
+
+.nft-cards {
+    max-width: 90%; 
+    max-height: 90%;
+    float: right;
+    margin-top: 20px;
+    position: absolute;
+}
