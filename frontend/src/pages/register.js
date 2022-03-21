@@ -1,8 +1,11 @@
 
 
 import { useEffect, useState, useCallback, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { getAddress } from '../utils/metamaskAuth';
 import { SocketContext } from '../contexts/socket';
+
 import './register.css';
 
 
@@ -11,6 +14,7 @@ function Register() {
     const [hasMetaMask, setHasMetaMask] = useState(false);
     const [username, setUsername] = useState('');
     const [usernameError, setUsernameError] = useState('');
+    let navigate = useNavigate();
 
     useEffect(() => {
         socket.on('register', registerListener);
@@ -29,6 +33,7 @@ function Register() {
     const registerListener = useCallback((registerResponse) => {
         if (registerResponse.response === 'OK') {
             alert("You've successfully registered!");
+            navigate('Scoreboard');
         }
         else {
             setUsernameError(registerResponse);
@@ -75,4 +80,4 @@ function Register() {
 
 }
 
-export { Register };
+export default Register;

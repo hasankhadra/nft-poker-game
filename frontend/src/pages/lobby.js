@@ -30,4 +30,4 @@ function Lobby(){
     )
 }
 
-export {Lobby};
+export default Lobby;

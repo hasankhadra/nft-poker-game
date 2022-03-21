@@ -7,4 +7,4 @@ function Game(){
     )
 }
 
-export {Game};
+export default Game;
