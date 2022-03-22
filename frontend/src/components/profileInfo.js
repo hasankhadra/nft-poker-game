@@ -1,9 +1,18 @@
+import "./profileInfo.css"
 
-function ProfileInfo(){
+function ProfileInfo(props){
 
     return (
-        <div>
-            This is profile info
+        <div className="profile-info">
+            <div className="block">
+                Total {props.numNfts} {props.numNfts > 1 ? "NFTs" : "NFT"}
+            </div>
+            <div className="block">
+                Total {props.numGames} {props.numGames == 1 ? "Game" : "Games"}
+            </div>
+            <div className="block">
+                Total ${props.totalBounties} Bounty
+            </div>
         </div>
     )
 }

@@ -14,6 +14,7 @@ import Lobby from './pages/lobby';
 import Register from './pages/register';
 import Game from './pages/game';
 import Leaderboard from './pages/leaderboard';
+import RegisterMetamask from "./pages/registerMetamask";
 
 function App() {
     return (
@@ -21,6 +22,7 @@ function App() {
             <SocketContext.Provider value={socket}>
                 <Routes>
                     <Route path="/" element={<Navigate to="/home"/>}/>
+                    <Route path="/register-metamask" element={<RegisterMetamask />}/>
                     <Route path="/home" element={<Home/>}/>
                     <Route path="/leaderboard" element={<Leaderboard/>}/>
                     <Route path="/lobby" element={<Lobby />}/>

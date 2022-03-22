@@ -4,9 +4,9 @@ import './home.css'
 import Footer from '../components/footer';
 import Header from '../components/header';
 
-import backgroundImg from '../assets/background.png';
-import backgroundImg2 from '../assets/background2.png';
-import cardsImg from '../assets/nftCards.png'
+import backgroundImg from '../assets/backgrounds/background.png';
+import backgroundImg2 from '../assets/backgrounds/background2.png';
+import cardsImg from '../assets/backgrounds/images/nftCards.png'
 
 
 function Home() {

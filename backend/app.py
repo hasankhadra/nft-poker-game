@@ -57,16 +57,18 @@ def register(data: dict):
     """
     
     if num_players_instance.get_cur_count() == TOTAL_PLAYERS:
-        socketio.emit("register", json.dumps({"response": "There is no room left for new players!"}))
+        socketio.emit("register", {"response": "There is no room left for new players!"})
         raise ConnectionRefusedError('There is no room left for new players!')
     
     if players_instance.exists_username([data["username"]]):
-        socketio.emit("register", json.dumps({"response": "Username already exists!\nTry a different username"}))
+        socketio.emit("register", {"response": """Nickname already exists!\nTry a different Nickname!"""})
         raise ConnectionRefusedError("Username already exists")
     
     players_instance.add_player(["TODO_get_nft_id", data["public_address"], data["username"], tiers_distribution[num_players_instance.get_cur_count()]])
     num_players_instance.increase_players_num()
     
+    socketio.emit("register", {"response": "OK"})
+
     if num_players_instance.get_cur_count() == TOTAL_PLAYERS:
         tournaments_id = tournaments_instance.get_current_tournament_id()
         round_players = players_instance.get_players(tournament_id=tournaments_id)
@@ -169,20 +171,20 @@ def stake_nft(data: dict):
                                                      "player_id": player_id}, 
                                                  get_json_format=True)
 
-    player_json = json.loads(player_json)
+    player_json = player_json
     
     if len(player_json) == 0:
-        socketio.emit("stake_nft", json.dumps({"response": "No such player with nft"}))
+        socketio.emit("stake_nft", {"response": "No such player with nft"})
         raise ConnectionRefusedError("No such player with nft")
     
     # TODO blockchain - transfer ownership of nft to smart contract
     try:
         players_instance.update({"id": player_id, "staked": True})
     except Exception as e:
-        socketio.emit("stake_nft", json.dumps({"response": e}))
+        socketio.emit("stake_nft", {"response": e})
 
     
-    socketio.emit("stake_nft", json.dumps({"response": "OK"}))    
+    socketio.emit("stake_nft", {"response": "OK"}) 
 
 @socketio.on("unstake_nft")
 def unstake_nft(data: dict):
@@ -205,20 +207,20 @@ def unstake_nft(data: dict):
                                                      "player_id": player_id}, 
                                                  get_json_format=True)
 
-    player_json = json.loads(player_json)
+    player_json = player_json
     
     if len(player_json) == 0:
-        socketio.emit("unstake_nft", json.dumps({"response": "No such player with nft"}))
+        socketio.emit("unstake_nft", {"response": "No such player with nft"})
         raise ConnectionRefusedError("No such player with nft")
     
     # TODO blockchain - transfer ownership of nft to player
     try:
         players_instance.update({"id": player_id, "staked": False})
     except Exception as e:
-        socketio.emit("unstake_nft", json.dumps({"response": e}))
+        socketio.emit("unstake_nft", {"response": e})
 
     
-    socketio.emit("unstake_nft", json.dumps({"response": "OK"}))    
+    socketio.emit("unstake_nft", {"response": "OK"})
 
 @socketio.on("draw_combo")
 def draw_combo(data):
@@ -247,7 +249,7 @@ def draw_combo(data):
     player_num = "player1" if player_id == cur_game[2] else "player2"
     games_instance.update({"id": game_id, f"{player_num}_id": player_id, f"{player_num}_combo": player_combo})
     
-    socketio.emit('draw_combo', json.dumps({"player_combo": player_combo}))
+    socketio.emit('draw_combo', {"player_combo": player_combo})
 
 @socketio.on("draw_the_flops")
 def draw_the_flops(data: dict):
@@ -271,7 +273,7 @@ def draw_the_flops(data: dict):
     
     the_flops = the_flops.split(",")
     
-    socketio.emit("draw_the_flops", json.dumps({"the_flops": the_flops}))
+    socketio.emit("draw_the_flops", {"the_flops": the_flops})
 
 @socketio.on("play_game")
 def play_game(data: dict):
@@ -304,7 +306,7 @@ def play_game(data: dict):
     player2_combo = game["player2_combo"]
     the_flops = game["flops"]
     
-    game_result: dict = json.loads(play(player1_combo, player2_combo, the_flops))
+    game_result: dict = play(player1_combo, player2_combo, the_flops)
     
     if game_result["winner"] != -1:
         games_instance.update({
@@ -338,7 +340,7 @@ def play_game(data: dict):
     
     # TODO handle the draw case
     
-    socketio.emit("play_game", json.dumps(game_result))
+    socketio.emit("play_game", game_result)
     
 
 if __name__ == "__main__":

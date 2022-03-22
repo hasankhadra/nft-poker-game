@@ -8,7 +8,7 @@ import { SocketContext } from '../contexts/socket';
 import Footer from '../components/footer';
 import Header from '../components/header';
 
-import backgroundImg from '../assets/background.png';
+import backgroundImg from '../assets/backgrounds/background.png';
 
 
 
@@ -34,7 +34,7 @@ function Lobby(){
     });
 
     useEffect(() => {
-        let public_address = "add1" // getAddress()
+        let public_address = "address_46" // getAddress()
         const payload = {
             public_address: public_address
         }
@@ -55,10 +55,25 @@ function Lobby(){
         setNfts(response.nfts);
     }, [nfts]);
 
+    const getGamesNum = () => {
+        let total_games = 0;
+        for(let i = 0; i < nfts.length; i++)
+            total_games += nfts[i].round_num - 1;
+        
+        return total_games;
+    }
+
+    const getTotalBounties = () => {
+        let total_bounties = 0.0;
+        for(let i = 0; i < nfts.length; i++)
+            total_bounties += nfts[i].bounty;
+        
+        return total_bounties;
+    }
 
     return (
 
-        <div style={{height:'100vh', backgroundColor: "#25262A"}}>
+        <div style={{height:'100vh', backgroundColor: "#25262A", display: "flex", flexDirection: "column"}}>
             <Header />
             <div style={{
                 backgroundImage: `url(${backgroundImg})`,
@@ -72,7 +87,7 @@ function Lobby(){
                 display: "flex", 
                 flexDirection: "column"}}>
 
-                <ProfileInfo />
+                <ProfileInfo numNfts={nfts.length} numGames={getGamesNum()} totalBounties={getTotalBounties()}/>
                 <div>Next Round: It will start in (put timer here)</div>
                 <NftList nfts={nfts} paginate={paginate}/>
             </div>

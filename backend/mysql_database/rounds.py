@@ -113,7 +113,7 @@ class Rounds:
         the rows
         """
         
-        assert len(by.keys() > 0)
+        assert len(by.keys()) > 0
         
         conn, crsr = self.init()
         

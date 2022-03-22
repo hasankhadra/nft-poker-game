@@ -1,0 +1,9 @@
+.profile-info {
+    text-align: center;
+    color: white;
+}
+
+.block {
+    margin: 10px;
+    display: inline-block;
+}

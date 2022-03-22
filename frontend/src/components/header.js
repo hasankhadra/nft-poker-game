@@ -1,11 +1,11 @@
 
 import './header.css'
 
-import logoImg from '../assets/logo.png';
-import instagramLogo from '../assets/instagram.png';
-import facebookLogo from '../assets/facebook.png';
-import twitterLogo from '../assets/twitter.png';
-import linkedinLogo from '../assets/linkedin.png';
+import logoImg from '../assets/icons/logo.png';
+import instagramLogo from '../assets/icons/instagram.png';
+import facebookLogo from '../assets/icons/facebook.png';
+import twitterLogo from '../assets/icons/twitter.png';
+import linkedinLogo from '../assets/icons/linkedin.png';
 
 import { Link, useNavigate} from "react-router-dom";
 function Header(props){
@@ -14,7 +14,7 @@ function Header(props){
 
     return (
         <div className="header">
-            <img className='logo' src={logoImg} alt="logo"/>
+            <Link to="/home"><img className='logo' src={logoImg} alt="logo"/></Link>
             { props.showLoginRegister ? "a" : ""}
 
             <div className='navigate'>
@@ -23,7 +23,7 @@ function Header(props){
             </div>
 
             <button className="body-large loginbtn" onClick={() => {}}>Login</button>
-            <button className="body-large registerbtn" onClick={() => navigate('register')}>Register</button> 
+            <button className="body-large registerbtn" onClick={() => navigate('/register-metamask')}>Register</button> 
             
             <div className='other-links'>
 

@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useContext } from "react";
 import Footer from '../components/footer';
 import Header from '../components/header';
 
-import backgroundImg from '../assets/background.png';
+import backgroundImg from '../assets/backgrounds/background.png';
 
 import { getAddress } from '../utils/metamaskAuth';
 import { SocketContext } from '../contexts/socket';

@@ -47,7 +47,7 @@ class Players:
         """
         conn, crsr = self.init()
         tournament_id = self.tournaments.get_current_tournament_id()
-        rounds = self.rounds.get_rounds_by_tournament_id([tournament_id])
+        rounds = self.rounds.get_rounds_by({"tournament_id": tournament_id})
         rounds = [column[0] for column in rounds]
         
         conditions = " round_id = %s OR" * len(rounds)
