@@ -11,10 +11,10 @@ import {SocketContext, socket} from './contexts/socket';
 
 import Home  from './pages/home'
 import Lobby from './pages/lobby';
-import Register from './pages/register';
+import Register from './pages/registration/register';
 import Game from './pages/game';
 import Leaderboard from './pages/leaderboard';
-import RegisterMetamask from "./pages/registerMetamask";
+import RegisterMetamask from "./pages/registration/registerMetamask";
 
 function App() {
     return (

@@ -3,14 +3,14 @@
 import { useEffect, useState, useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { getAddress } from '../utils/metamaskAuth';
-import { SocketContext } from '../contexts/socket';
+import { getAddress } from '../../utils/metamaskAuth';
+import { SocketContext } from '../../contexts/socket';
 
 import './register.css';
 
-import backgroundImg from '../assets/backgrounds/background.png';
-import Header from "../components/header";
-import Footer from "../components/footer";
+import backgroundImg from '../../assets/backgrounds/background.png';
+import Header from "../../components/header";
+import Footer from "../../components/footer";
 
 
 function Register() {
@@ -18,6 +18,8 @@ function Register() {
     const [hasMetaMask, setHasMetaMask] = useState(false);
     const [username, setUsername] = useState('');
     const [usernameError, setUsernameError] = useState('');
+    const [registered, setRegistered] = useState(false);
+
     let navigate = useNavigate();
 
     useEffect(() => {
@@ -38,7 +40,7 @@ function Register() {
         console.log()
         if (registerResponse.response === 'OK') {
             alert("You've successfully registered!");
-            navigate('/leaderboard');
+            setRegistered(true);
         }
         else {
             setUsernameError(registerResponse.response);

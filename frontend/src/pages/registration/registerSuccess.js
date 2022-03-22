@@ -3,17 +3,17 @@
 import { useEffect, useState, useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { getAddress } from '../utils/metamaskAuth';
-import { SocketContext } from '../contexts/socket';
+import { getAddress } from '../../utils/metamaskAuth';
+import { SocketContext } from '../../contexts/socket';
 
-import './registerMetamask.css';
+import './registerSuccess.css';
 
-import backgroundImg from '../assets/backgrounds/background.png';
-import Header from "../components/header";
-import Footer from "../components/footer";
+import backgroundImg from '../../assets/backgrounds/background.png';
+import Header from "../../components/header";
+import Footer from "../../components/footer";
 
 
-function RegisterMetamask() {
+function RegisterSuccess() {
     const socket = useContext(SocketContext);
     const [hasMetaMask, setHasMetaMask] = useState(false);
     let navigate = useNavigate();
@@ -22,13 +22,9 @@ function RegisterMetamask() {
         if (typeof window.ethereum !== "undefined") {
             setHasMetaMask(true);
         }
-    });
+        await window.ethereum.enable().then(() => {navigate("/lobby")}).catch(() => {alert("You are not registered!")})
+    }, []);
 
-
-    const handleClick = async (e) => {
-        e.preventDefault();
-        await window.ethereum.enable().then(() => {navigate("/register")}).catch(() => {window.alert("You need to allow MetaMask.")})
-    };
     
     return (
         <div style={{height:'100vh', backgroundColor: "#25262A", display: "flex", flexDirection: "column"}}>
@@ -57,4 +53,4 @@ function RegisterMetamask() {
 
 }
 
-export default RegisterMetamask;
+export default RegisterSuccess;
