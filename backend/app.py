@@ -75,7 +75,7 @@ def register(data: dict):
         games = get_round_matching(round_players)
         games_instance.add_round_games(round_id, games)
         
-@socketio.on("nfts_info")
+@socketio.on("get_nfts_info")
 def nfts_info(data: dict):
     """
     return a list of nfts (if any) with their metadata
@@ -95,7 +95,7 @@ def nfts_info(data: dict):
     
     nfts_json_format = players_instance.get_player_by(by={"public_address": public_address, "tournament_id": tournament_id}, get_json_format=True)
 
-    socketio.emit("nfts_info", json.dumps({"nfts": nfts_json_format}))
+    socketio.emit("get_nfts_info", {"nfts": nfts_json_format})
     
 @socketio.on("get_players")
 def get_players():

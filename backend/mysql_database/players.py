@@ -88,7 +88,6 @@ class Players:
         json_data = []
         for row in results:
             json_data.append(dict(zip(row_headers, row)))
-        # return json.dumps(json_data)
         return json_data
     
     def get_players(self, tournament_id: int = None, winners=None, get_json_format=None):
@@ -124,7 +123,7 @@ class Players:
         the rows
         """
         
-        assert len(by.keys() > 0)
+        assert len(by.keys()) > 0
         
         conn, crsr = self.init()
         

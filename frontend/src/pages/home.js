@@ -15,7 +15,7 @@ function Home() {
             <Header/>
             <div style={{
                 backgroundImage: `url(${backgroundImg2})`,
-                height: "88%",
+                height: "80%",
                 marginLeft: "10%",
                 backgroundColor: "#25262A",
                 // backgroundColor: "white",
@@ -32,8 +32,6 @@ function Home() {
                     <p style={{color: '#FFFFFF'}}>
                     Capped Range NFT is an NFT gaming project in which holders will use their NFT asset to play in a heads-up single-elimination poker tournament consisting of 14 rounds. Each round, a holder will battle against another holder. Each holder’s specific NFT will have an assigned poker hand range attached to it.
                     </p>
-
-
 
                 </div>
                 <img className="nft-cards" src={cardsImg} alt="cards image" style={{right: 0}}></img>

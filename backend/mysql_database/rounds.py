@@ -104,7 +104,7 @@ class Rounds:
         json_data = []
         for row in results:
             json_data.append(dict(zip(row_headers, row)))
-        return json.dumps(json_data, default=str)
+        return json_data
     
     def get_rounds_by(self, by: dict, get_json_format=None):
         """

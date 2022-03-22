@@ -13,7 +13,7 @@ import Home  from './pages/home'
 import Lobby from './pages/lobby';
 import Register from './pages/register';
 import Game from './pages/game';
-import Scoreboard from './pages/scoreboard';
+import Leaderboard from './pages/leaderboard';
 
 function App() {
     return (
@@ -22,7 +22,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Navigate to="/home"/>}/>
                     <Route path="/home" element={<Home/>}/>
-                    <Route path="/scoreboard" element={<Scoreboard/>}/>
+                    <Route path="/leaderboard" element={<Leaderboard/>}/>
                     <Route path="/lobby" element={<Lobby />}/>
                     <Route path="/register" element={<Register />}/>
                     <Route path="/game/:id" element={<Game />}/>

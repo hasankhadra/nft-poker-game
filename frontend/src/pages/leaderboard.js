@@ -10,14 +10,14 @@ import { getAddress } from '../utils/metamaskAuth';
 import { SocketContext } from '../contexts/socket';
 import { PlayersTable } from '../components/playersTable'
 
-import './scoreboard.css'
+import './leaderboard.css'
 
-function Scoreboard() {
+function Leaderboard() {
 
     const socket = useContext(SocketContext);
     const [hasMetaMask, setHasMetaMask] = useState(false);
     const [players, setPlayers] = useState([]);
-    const [paginate, setPaginate] = useState(1);
+    const [paginate, setPaginate] = useState(30);
 
     useEffect(() => {
         socket.on('get_players', getPlayersListener);
@@ -67,12 +67,13 @@ function Scoreboard() {
     }
 
     return (
-        <div style={{height:'100vh', backgroundColor: "#25262A"}}>
-            <Header />
+        <div style={{height:'100vh', backgroundColor: "#25262A", display: "flex", flexDirection: "column"}}>
+            <Header pageName={'leaderboard'} />
             <div style={{
                 backgroundImage: `url(${backgroundImg})`,
-                height: "88%",
+                height: "80%",
                 marginLeft: "10%",
+                // marginBottom: "10%",
                 backgroundColor: "#25262A",
                 // backgroundColor: "white",
                 backgroundSize: 'cover',
@@ -88,4 +89,4 @@ function Scoreboard() {
     )
 }
 
-export default Scoreboard;
+export default Leaderboard;

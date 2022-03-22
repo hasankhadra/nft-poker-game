@@ -95,7 +95,7 @@ class Games:
         json_data = []
         for row in results:
             json_data.append(dict(zip(row_headers, row)))
-        return json.dumps(json_data)
+        return json_data
    
     def get_games_from_round(self, game_info: list):
         """

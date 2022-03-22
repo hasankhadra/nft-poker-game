@@ -1,8 +1,9 @@
 
 .header {
-    height: 6%;
+    height: 4%;
     width: 100%;
 
+    margin-bottom: 3%;
     display:flex; 
     flex-direction: row; 
 }
@@ -20,7 +21,45 @@
     margin-top: 15px;
 }
 
-.other-links img{
+.other-links a{
     margin-left: 10px;
     margin-right: 10px;
+}
+
+.navigate, .navigate>a {
+    margin: 20px;
+    color: white;
+    text-decoration: none;
+}
+
+a.focused {
+    color: #FFC728;
+    text-decoration: underline;
+}
+
+button.registerbtn {
+    background: #FFC728;
+    width: 10%;
+    border: hidden;
+    color: #25262A;
+    line-height: 30%;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 13px;
+    
+}
+
+button.loginbtn {
+    background: transparent;
+    border: hidden;
+    width: 10%;
+    color: white;
+    line-height: 30%;
+    margin-left: 150px;
+    margin-right: 20px;
+    margin-top: 13px;
+}
+
+button {
+
 }

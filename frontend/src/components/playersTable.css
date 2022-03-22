@@ -2,13 +2,39 @@
 
 .players-table {
     width: 100%;
-    justify-content: center; 
+    height: 90%;
+    justify-content: center;
     align-items: center;
-    margin-top: 40px;
+    padding: 0px 15px;
+    border: 1px solid #616268;
+    overflow: auto;
+    margin-left: -5px;
+    width: 100%;
+    padding: 0px 10px;
+}
+
+.players-table>table{
+    padding: 0px;
+}
+
+.players-table::-webkit-scrollbar {
+    width: 0.4em;
+    margin-left: 10px;
+}
+
+.players-table::-webkit-scrollbar-track {
+    box-shadow: inset 0 1 6px #4C4F58;
+}
+
+.players-table::-webkit-scrollbar-thumb {
+    background-color: #4C4F58;
+    /* outline: 1px solid slategrey; */
+    border-radius: 10px;
 }
 
 table {
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     width: 100%;
 }
 
@@ -16,19 +42,28 @@ th, td {
     text-align: center;
     padding: 8px;
     background: #4C4F58;
-
 }
 
 tr:nth-child(even) {
-    background-color: #f2f2f2
+    background-color: #f2f2f2;
 }
 
 th {
     color: #B9BABC;
+    border-width: 10px 0px;
+    border-style: solid;
+    border-color: #25262A;
+    position: sticky;
+    z-index: 2;
+    top: 0;
 }
 
 td {
     color: white;
+    z-index: 1;
+    border-width: 3px 0px;
+    border-style: solid;
+    border-color: #25262A;
 }
 
 

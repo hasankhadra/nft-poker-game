@@ -33,7 +33,7 @@ function Register() {
     const registerListener = useCallback((registerResponse) => {
         if (registerResponse.response === 'OK') {
             alert("You've successfully registered!");
-            navigate('Scoreboard');
+            navigate('/leaderboard');
         }
         else {
             setUsernameError(registerResponse);
