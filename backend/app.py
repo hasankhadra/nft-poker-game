@@ -43,8 +43,6 @@ if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     scheduler.add_job(func=schedule_round, trigger="interval", seconds=10)
     scheduler.start()
 
-# TODO security check (probably event) to prevent random people from entering games rooms 
-
 @socketio.on("register")
 def register(data: dict):
     """
@@ -121,7 +119,7 @@ def get_players():
 @socketio.on('log_in_round')
 def log_in_round(data: dict):
     
-    # TODO check if all nfts are still owned by this user.
+    # TODO check if all nfts are still owned by this user. BLOCKCHAIN
     pass
     
 @socketio.on('join_room')
@@ -135,7 +133,7 @@ def on_join(data):
     room = data['room']
     join_room(room)
 
-@socketio.on('leave')
+@socketio.on('leave_room')
 def on_leave(data):
     """
     :param data: dict
@@ -147,7 +145,7 @@ def on_leave(data):
 
 @socketio.on("get_rooms")
 def get_rooms(data: dict):
-    # TODO return all rooms this player will join during this round
+    # TODO return all rooms this player will join during this round BLOCKCHAIN
     pass
 
 @socketio.on("stake_nft")

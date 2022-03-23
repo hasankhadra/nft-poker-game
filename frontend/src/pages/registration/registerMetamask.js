@@ -24,7 +24,6 @@ function RegisterMetamask() {
         }
     });
 
-
     const handleClick = async (e) => {
         e.preventDefault();
         await window.ethereum.enable().then(() => {navigate("/register")}).catch(() => {window.alert("You need to allow MetaMask.")})

@@ -12,7 +12,7 @@ import cardsImg from '../assets/backgrounds/images/nftCards.png'
 function Home() {
     return (
         <div style={{height:'100vh', backgroundColor: "#25262A"}}>
-            <Header/>
+            <Header showLoginRegister={true}/>
             <div style={{
                 backgroundImage: `url(${backgroundImg2})`,
                 height: "80%",
