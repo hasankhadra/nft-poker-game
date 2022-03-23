@@ -67,7 +67,7 @@ function Leaderboard() {
     }
 
     return (
-        <div style={{height:'100vh', backgroundColor: "#25262A", display: "flex", flexDirection: "column"}}>
+        <div style={{ height: '100vh', backgroundColor: "#25262A", display: "flex", flexDirection: "column" }}>
             <Header pageName={'leaderboard'} />
             <div style={{
                 backgroundImage: `url(${backgroundImg})`,
@@ -79,9 +79,16 @@ function Leaderboard() {
                 backgroundSize: 'cover',
                 backgroundRepeat: 'no-repeat',
                 width: "80%",
-                display: "flex", 
-                flexDirection: "row"}}>
-                <PlayersTable players={players} paginate={paginate}/>
+                display: "flex",
+                flexDirection: "column"
+            }}>
+                <h4 style={{color: "white", margin: "1% 1%", height: "10%"}}>Game Leaderboard</h4>
+                <p style={{color: "white",  margin: "2% 1%", height: "10%"}}>
+                This leaderboard includes the <span className="yellow">1st Round</span> of the game that took place on <span className="yellow">July 21st, 2022</span>.
+                 All the participants were given bounties according to the description in the <span className="yellow">Game Guide </span>
+                 page. All players who participated are shown regardless of their win/lost status.
+                </p>
+                <PlayersTable players={players} paginate={paginate} />
             </div>
 
             <Footer />

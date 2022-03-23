@@ -1,27 +1,26 @@
-
 .header {
     height: 4%;
     width: 100%;
 
     margin-bottom: 3%;
-    display:flex; 
-    flex-direction: row; 
+    display: flex;
+    flex-direction: row;
 }
 
-.other-links{
-    margin-left: auto; 
+.other-links {
+    margin-left: auto;
     margin-right: 150px;
     margin-top: 15px;
 }
 
-.logo{
+.logo {
     height: 34px;
     width: 72px;
     margin-left: 150px;
     margin-top: 15px;
 }
 
-.other-links a{
+.other-links a {
     margin-left: 10px;
     margin-right: 10px;
 }
@@ -37,29 +36,36 @@ a.focused {
     text-decoration: underline;
 }
 
-button.registerbtn {
+.header-right {
+    margin-left: auto;
+    margin-right: 0;
+    display: flex;
+    flex-direction: row;
+}
+
+button.header-registerbtn {
     background: #FFC728;
-    width: 10%;
+    width: 120px;
     border: hidden;
     color: #25262A;
     line-height: 30%;
     margin-left: 20px;
     margin-right: 20px;
     margin-top: 13px;
-    
+    padding: 16px 13px;
 }
 
-button.loginbtn {
+button.header-loginbtn {
     background: transparent;
     border: hidden;
-    width: 10%;
+    width: 120px;
     color: white;
     line-height: 30%;
-    margin-left: 150px;
+    right: 0;
     margin-right: 20px;
     margin-top: 13px;
+
+    padding: 16px 13px;
 }
 
-button {
-
-}
+button {}

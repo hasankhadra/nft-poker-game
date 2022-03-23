@@ -15,9 +15,10 @@ import Footer from "../../components/footer";
 
 function Register() {
     const socket = useContext(SocketContext);
-    const [hasMetaMask, setHasMetaMask] = useState(false);
+    const [hasMetaMask, setHasMetaMask] = useState(typeof window.ethereum !== "undefined");
     const [username, setUsername] = useState('');
     const [usernameError, setUsernameError] = useState('');
+    const [registeredMetamask, setRegisteredMetamask] = useState(false);
     const [registered, setRegistered] = useState(false);
 
     let navigate = useNavigate();
@@ -30,7 +31,10 @@ function Register() {
         }
     }, [socket]);
 
-    useEffect(() => {
+    useEffect(async () => {
+        if (registeredMetamask) {
+            await window.ethereum.enable().then(() => { }).catch(() => { window.alert("You need to allow MetaMask."); setRegisteredMetamask(false); })
+        }
         if (typeof window.ethereum !== "undefined") {
             setHasMetaMask(true);
         }
@@ -62,9 +66,14 @@ function Register() {
         socket.emit("register", payload);
     }, [username, usernameError]);
 
+    const handleClick = async (e) => {
+        e.preventDefault();
+        await window.ethereum.enable().then(() => { setRegisteredMetamask(true) }).catch(() => { window.alert("You need to allow MetaMask.") })
+    };
+
     return (
-        <div style={{height:'100vh', backgroundColor: "#25262A", display: "flex", flexDirection: "column"}}>
-            <Header />
+        <div style={{ height: '100vh', backgroundColor: "#25262A", display: "flex", flexDirection: "column" }}>
+            <Header showLoginRegister={false}/>
             <div style={{
                 backgroundImage: `url(${backgroundImg})`,
                 height: "80%",
@@ -78,24 +87,38 @@ function Register() {
                 display: "flex",
                 flexDirection: "row"
             }}>
+                {!hasMetaMask ? alert("Please install MetaMask!") :
+                    registered ?
+                        <div className="mid-page"> <h5>Congratulation!</h5> <h6 style={{ color: "#FFC728" }}>Here's your Game NFT</h6>
+                            <p className="body-large">
+                                You have successfully registered to Capped Range Poker Game! You can log into your account anytime to 
+                                see leaderboard and upcoming round. The first round will take place on <span style={{ color: "#FFC728" }}>July 12th, 2022</span>.
+                            </p>
+                            <button onClick={() => navigate('/lobby')}>Go to Lobby</button>
+                        </div>
 
-                {hasMetaMask ?
-                    <div class="container">
-                        <form onSubmit={onSubmit}>
-                            <label><b>Nickname</b></label>
-                            <input
-                                type="text"
-                                placeholder="A unique nickname"
-                                name="username"
-                                value={username}
-                                onChange={e => setUsername(e.target.value.trim())}
-                            />
-                            <span style={{ color: "red" }}>{usernameError}</span>
-                            <hr />
-                            <button type="submit" className="registerbtn"> Register </button>
-                        </form>
-                    </div>
-                    : "Please install MetaMask"}
+                        : registeredMetamask ?
+                            <div className="mid-page">
+                                <form onSubmit={onSubmit}>
+                                    <label><b>Nickname</b></label>
+                                    <input
+                                        type="text"
+                                        placeholder="A unique nickname"
+                                        name="username"
+                                        value={username}
+                                        onChange={e => setUsername(e.target.value.trim())}
+                                    />
+                                    <span style={{ color: "red" }}>{usernameError}</span>
+                                    <hr />
+                                    <button type="submit" className="registerbtn"> Register </button>
+                                </form>
+                            </div>
+                            :
+                            <div className="mid-page">
+                                <h5 style={{color: "white"}}>Game registeration</h5>
+                                <button onClick={handleClick}>Register with Metamask</button>
+                            </div>
+                }
             </div>
             <Footer />
         </div>

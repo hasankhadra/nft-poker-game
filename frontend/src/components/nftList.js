@@ -46,7 +46,7 @@ function NftList(props) {
             </div>
             <div className="pagination">
 
-                <p className='all-pages'>{(curPage - 1) * props.paginate + 1} - {Math.min(curPage * props.paginate, props.nfts.length)} of {props.nfts.length}</p>
+                <p className='all-pages'>{Math.min(props.nfts.length, (curPage - 1) * props.paginate + 1)} - {Math.min(curPage * props.paginate, props.nfts.length)} of {props.nfts.length}</p>
 
                 <p className='decrement' onClick={() => setCurPage(prev => Math.max(1, prev - 1))}><img src={arrowLeft} alt="left-arrow" /></p>
 
@@ -58,7 +58,7 @@ function NftList(props) {
 
                 {<p style={{ background: "#4C4F58" }} onClick={() => { }}> {curPage}</p>}
 
-                {curPage === Math.ceil(props.nfts.length / props.paginate) ? null : <p onClick={() => setCurPage(prev => Math.min(Math.ceil(props.nfts.length / props.paginate), prev + 1))}> {curPage + 1}</p>}
+                {curPage >= Math.ceil(props.nfts.length / props.paginate) ? null : <p onClick={() => setCurPage(prev => Math.min(Math.ceil(props.nfts.length / props.paginate), prev + 1))}> {curPage + 1}</p>}
                 {curPage >= Math.ceil(props.nfts.length / props.paginate) - 1 ? null : <p onClick={() => setCurPage(prev => Math.min(Math.ceil(props.nfts.length / props.paginate), prev + 2))}> {curPage + 2}</p>}
 
                 {curPage >= Math.ceil(props.nfts.length / props.paginate) - 3 ? null : <p className='dots'>...</p>}

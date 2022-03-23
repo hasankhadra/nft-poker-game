@@ -12,7 +12,7 @@ input[type=text] {
     background: #f1f1f1;
 }
 
-input[type=text]:focus{
+input[type=text]:focus {
     background-color: #ddd;
     outline: none;
 }
@@ -29,5 +29,23 @@ input[type=text]:focus{
 }
 
 .registerbtn:hover {
-    opacity:1;
+    opacity: 1;
+}
+
+.mid-page {
+    width: 50%;
+    height: 50%;
+    margin-top: 10%;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+}
+.mid-page button{
+    background: #FFC728;
+    width: 100%;
+    padding: 20px 0;
+    border-radius: 5px;
+    border: hidden;
+    color: #25262A;
 }
