@@ -17,7 +17,7 @@ function Leaderboard() {
     const socket = useContext(SocketContext);
     const [hasMetaMask, setHasMetaMask] = useState(false);
     const [players, setPlayers] = useState([]);
-    const [paginate, setPaginate] = useState(30);
+    const [paginate, setPaginate] = useState(10);
 
     useEffect(() => {
         socket.on('get_players', getPlayersListener);
@@ -35,14 +35,33 @@ function Leaderboard() {
 
 
     useEffect(() => {
-        socket.emit("get_players");
-        // const newPlayers = [
-        //     {id: 1, username: "hasan", bounty: 10, Round_number: 2},
-        //     {id: 2, username: "hash", bounty: 100, Round_number: 1},
-        //     {id: 3, username: "igor", bounty: 35, Round_number: 3}
-        // ]
+        // // TESTING FRONTEND
 
+        // const newPlayers = [
+        //     {id: 1, username: "user1", bounty: 10, round_num: 2},
+        //     {id: 2, username: "user2", bounty: 32.4, round_num: 1},
+        //     {id: 3, username: "user3", bounty: 5, round_num: 1},
+        //     {id: 4, username: "user4", bounty: 23.4, round_num: 3},
+        //     {id: 5, username: "user5", bounty: 5.1, round_num: 2},
+        //     {id: 6, username: "user6", bounty: 2, round_num: 3},
+        //     {id: 7, username: "user7", bounty: 35, round_num: 3},
+        //     {id: 8, username: "user8", bounty: 10, round_num: 2},
+        //     {id: 9, username: "user9", bounty: 32.4, round_num: 3},
+        //     {id: 10, username: "user10", bounty: 5, round_num: 1},
+        //     {id: 11, username: "user11", bounty: 23.4, round_num: 3},
+        //     {id: 12, username: "user12", bounty: 5.1, round_num: 2},
+        //     {id: 13, username: "user13", bounty: 10, round_num: 2},
+        // ]
+        
+        // newPlayers.sort(comparePlayers);
+        // newPlayers.map((player, index) => player.page = Math.ceil((index + 1) / paginate));
+        // newPlayers.map((player, index) => player.rank = index + 1);
         // setPlayers(newPlayers);
+        // return;
+        // // TESTING FRONTEND
+
+        
+        socket.emit("get_players");
     }, []);
 
     const comparePlayers = (player1, player2) => {
@@ -68,7 +87,7 @@ function Leaderboard() {
 
     return (
         <div style={{ height: '100vh', backgroundColor: "#25262A", display: "flex", flexDirection: "column" }}>
-            <Header pageName={'leaderboard'} />
+            <Header pageName={'leaderboard'} showLoginRegister={true}/>
             <div style={{
                 backgroundImage: `url(${backgroundImg})`,
                 height: "80%",

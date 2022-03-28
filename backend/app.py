@@ -8,6 +8,7 @@ from __init__ import TOTAL_PLAYERS, get_tiers_distribution, DB_CONFIG_FILE
 from mysql_database.tournaments import Tournaments
 from mysql_database.rounds import Rounds
 from mysql_database.games import Games
+from mysql_database.games_draws import GamesDraws
 from mysql_database.players import Players
 from mysql_database.num_players import Num_players
 
@@ -27,8 +28,10 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 tournaments_instance = Tournaments(DB_CONFIG_FILE)
 rounds_instance = Rounds(DB_CONFIG_FILE)
 games_instance = Games(DB_CONFIG_FILE)
+games_draws_instance = GamesDraws(DB_CONFIG_FILE)
 players_instance = Players(DB_CONFIG_FILE)
 num_players_instance = Num_players(DB_CONFIG_FILE)
+
 
 tiers_distribution = get_tiers_distribution()
 
@@ -298,7 +301,7 @@ def play_game(data: dict):
     """  
     game_id = data["game_id"]
     
-    game = json.loads(games_instance.get_game([game_id], get_json_format=True))
+    game = games_instance.get_game([game_id], get_json_format=True)
     
     player1_combo = game["player1_combo"]
     player2_combo = game["player2_combo"]
@@ -336,10 +339,14 @@ def play_game(data: dict):
     del game_result["best_hand_1_name"]
     del game_result["best_hand_2_name"]
     
-    # TODO handle the draw case
+    if game_result["winner"] == -1:
+        games_draws_instance.add_game([game_id, player1_combo, player2_combo, the_flops])
+    else:
+        games_instance.update({"id": game_id, 
+                               "winner_id": game["player1_id"] if game_result["winner"] == 1 else game["player2_id"]})
     
     socketio.emit("play_game", game_result)
     
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True)
+    socketio.run(app, debug=True, host="0.0.0.0")

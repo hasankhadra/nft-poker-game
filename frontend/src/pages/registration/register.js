@@ -59,6 +59,13 @@ function Register() {
             return;
         }
         setUsernameError('')
+
+        // // TESTING FRONTEND
+        // setRegistered(true);
+        // return;
+        // // TESTING FRONTEND
+
+        
         const payload = {
             public_address: address,
             username: username

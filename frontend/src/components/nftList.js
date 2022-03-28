@@ -10,7 +10,6 @@ import arrowRight from '../assets/arrows/vector-r.png'
 function NftList(props) {
 
     const [curPage, setCurPage] = useState(1);
-
     return (
 
         <div style={{ width: "100%", height: "100%" }}>
@@ -36,7 +35,7 @@ function NftList(props) {
                                         <td className='body-large'>{ }</td>
                                         <td className='body-large'>${element.bounty}</td>
                                         <td className='body-large'>{element.round_num}</td>
-                                        <td className='body-large'>{element.staked}</td>
+                                        <td className='body-large'>{element.staked ? "Staked" : "Unstaked"}</td>
                                     </tr>
                                 )
                             return "";
