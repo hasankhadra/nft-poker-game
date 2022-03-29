@@ -33,7 +33,7 @@ function Lobby() {
         }
     });
 
-    useEffect(() => {
+    useEffect(async () => {
 
         // // TESTING FRONTEND
 
@@ -60,7 +60,8 @@ function Lobby() {
         // // TESTING FRONTEND
 
 
-        let public_address = getAddress()
+        let public_address = await getAddress()
+        console.log(public_address)
         const payload = {
             public_address: public_address
         }

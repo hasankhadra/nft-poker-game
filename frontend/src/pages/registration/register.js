@@ -65,7 +65,6 @@ function Register() {
         // return;
         // // TESTING FRONTEND
 
-        
         const payload = {
             public_address: address,
             username: username

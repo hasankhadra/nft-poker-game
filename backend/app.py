@@ -25,7 +25,6 @@ app = Flask(__name__)
 CORS(app)
 app.config["SECRET_KEY"] = os.environ["SECRET_KEY"]
 socketio = SocketIO(app, cors_allowed_origins="*")
-CORS(socketio)
 
 tournaments_instance = Tournaments(DB_CONFIG_FILE)
 rounds_instance = Rounds(DB_CONFIG_FILE)
