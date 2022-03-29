@@ -59,6 +59,12 @@ function Register() {
             return;
         }
         setUsernameError('')
+
+        // // TESTING FRONTEND
+        // setRegistered(true);
+        // return;
+        // // TESTING FRONTEND
+
         const payload = {
             public_address: address,
             username: username
@@ -73,7 +79,6 @@ function Register() {
 
     return (
         <div style={{ height: '100vh', backgroundColor: "#25262A", display: "flex", flexDirection: "column" }}>
-            <Header showLoginRegister={false}/>
             <div style={{
                 backgroundImage: `url(${backgroundImg})`,
                 height: "80%",

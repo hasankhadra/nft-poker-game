@@ -1,7 +1,8 @@
-import socketio from "socket.io-client";
+import socketIOClient from "socket.io-client";
+
 import React from "react";
 
-const SOCKET_URL = 'http://localhost:5000';
+const SOCKET_URL = 'http://54.183.235.87';
 
-export const socket = socketio.connect(SOCKET_URL);
+export const socket = socketIOClient(SOCKET_URL);
 export const SocketContext = React.createContext();
