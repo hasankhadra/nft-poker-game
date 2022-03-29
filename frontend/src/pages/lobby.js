@@ -1,12 +1,14 @@
-import io from 'socket.io-client';
+
 import { useEffect, useState, useCallback, useContext } from "react";
+import {Helmet} from "react-helmet";
+import io from 'socket.io-client';
+
 import {getAddress} from '../utils/metamaskAuth';
+
 import ProfileInfo from '../components/profileInfo';
 import NftList from '../components/nftList';
-import { SocketContext } from '../contexts/socket';
 
-import Footer from '../components/footer';
-import Header from '../components/header';
+import { SocketContext } from '../contexts/socket';
 
 import backgroundImg from '../assets/backgrounds/background.png';
 
@@ -72,9 +74,10 @@ function Lobby(){
     }
 
     return (
-
         <div style={{height:'100vh', backgroundColor: "#25262A", display: "flex", flexDirection: "column"}}>
-            <Header />
+            <Helmet>
+                <title>Lobby</title>
+            </Helmet>
             <div style={{
                 backgroundImage: `url(${backgroundImg})`,
                 height: "88%",
@@ -91,8 +94,6 @@ function Lobby(){
                 <div>Next Round: It will start in (put timer here)</div>
                 <NftList nfts={nfts} paginate={paginate}/>
             </div>
-
-            <Footer />
         </div>
     )
 }

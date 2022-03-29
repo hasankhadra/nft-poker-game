@@ -9,20 +9,20 @@
 
 .other-links {
     margin-left: auto;
-    margin-right: 150px;
-    margin-top: 15px;
+    margin-right: 9rem;
+    margin-top: 1rem;
 }
 
 .logo {
     height: 34px;
     width: 72px;
-    margin-left: 150px;
-    margin-top: 15px;
+    margin-left: 9rem;
+    margin-top: 1rem;
 }
 
 .other-links a {
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 1rem;
+    margin-right: 1rem;
 }
 
 .navigate, .navigate>a {
@@ -67,5 +67,3 @@ button.header-loginbtn {
 
     padding: 16px 13px;
 }
-
-button {}

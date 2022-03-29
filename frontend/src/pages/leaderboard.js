@@ -1,8 +1,6 @@
 
 import { useEffect, useState, useCallback, useContext } from "react";
-
-import Footer from '../components/footer';
-import Header from '../components/header';
+import {Helmet} from "react-helmet";
 
 import backgroundImg from '../assets/backgrounds/background.png';
 
@@ -36,13 +34,6 @@ function Leaderboard() {
 
     useEffect(() => {
         socket.emit("get_players");
-        // const newPlayers = [
-        //     {id: 1, username: "hasan", bounty: 10, Round_number: 2},
-        //     {id: 2, username: "hash", bounty: 100, Round_number: 1},
-        //     {id: 3, username: "igor", bounty: 35, Round_number: 3}
-        // ]
-
-        // setPlayers(newPlayers);
     }, []);
 
     const comparePlayers = (player1, player2) => {
@@ -68,7 +59,9 @@ function Leaderboard() {
 
     return (
         <div style={{ height: '100vh', backgroundColor: "#25262A", display: "flex", flexDirection: "column" }}>
-            <Header pageName={'leaderboard'} />
+            <Helmet>
+                <title>Leaderboard</title>
+            </Helmet>
             <div style={{
                 backgroundImage: `url(${backgroundImg})`,
                 height: "80%",
@@ -90,8 +83,6 @@ function Leaderboard() {
                 </p>
                 <PlayersTable players={players} paginate={paginate} />
             </div>
-
-            <Footer />
         </div>
     )
 }

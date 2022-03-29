@@ -1,42 +1,41 @@
 
 import './home.css'
 
-import Footer from '../components/footer';
-import Header from '../components/header';
 
 import backgroundImg from '../assets/backgrounds/background.png';
 import backgroundImg2 from '../assets/backgrounds/background2.png';
 import cardsImg from '../assets/backgrounds/images/nftCards.png'
 
+import {Helmet} from "react-helmet";
 
 function Home() {
     return (
-        <div style={{height:'100vh', backgroundColor: "#25262A"}}>
-            <Header showLoginRegister={true}/>
+        <div>
+            <Helmet>
+                <title>Capped Range</title>
+            </Helmet>
             <div style={{
                 backgroundImage: `url(${backgroundImg2})`,
                 height: "80%",
                 marginLeft: "10%",
-                backgroundColor: "#25262A",
-                // backgroundColor: "white",
                 backgroundSize: 'cover',
                 backgroundRepeat: 'no-repeat',
-                width: "80%",
+                // width: "80%",
                 display: "flex", 
-                flexDirection: "row"
+                flexDirection: "row",
+                flexWrap: "wrap"
             }}>
-                <div className="text-box" style={{width: "45%"}}>
+                <div className="text-box flex-item-left">
                     <h3>
-                        Make your NFT worth more through <span style={{color: '#FFC728'}}>Poker Game</span>
+                        Make your NFT worth more through <span className='yellow'>Poker Game</span>
                     </h3>
-                    <p style={{color: '#FFFFFF'}}>
+                    <p className='white'>
                     Capped Range NFT is an NFT gaming project in which holders will use their NFT asset to play in a heads-up single-elimination poker tournament consisting of 14 rounds. Each round, a holder will battle against another holder. Each holder’s specific NFT will have an assigned poker hand range attached to it.
                     </p>
 
                 </div>
-                <img className="nft-cards" src={cardsImg} alt="cards image" style={{right: 0}}></img>
+                <img className="nft-cards flex-item-right" src={cardsImg} alt="cards image"></img>
             </div>
-            <Footer/>
         </div>
     )
 }
