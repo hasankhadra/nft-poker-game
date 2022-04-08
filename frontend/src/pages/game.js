@@ -16,9 +16,12 @@ import player2Image from '../assets/nfts/nft2.png'
 import backgroundImg from '../assets/backgrounds/background.png';
 
 function Game() {
+    // This is to be used in the join game event.
     let { gameId } = useParams();
+
     const socket = useContext(SocketContext);
 
+    // Update when the game is over.
     const [winner, setWinner] = useState(-1);
 
     // Update this to a list of empty strings (the important thing is to have 2 as the length of the hand, 5 as the flops length)
