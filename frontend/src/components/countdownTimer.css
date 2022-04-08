@@ -16,6 +16,10 @@
     flex-direction: row;
 }
 
+.time-boxes>*{
+    margin: 0 .2rem;
+}
+
 .upper-number-box {
     margin-top: .3rem;
     font-family: 'Josefin Sans';

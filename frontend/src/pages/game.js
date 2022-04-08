@@ -31,7 +31,9 @@ function Game() {
     const [opponentUsername, setOpponentUsername] = useState('james_perterss')
     const [myUsername, setMyUsername] = useState('makelew_sasa342')
 
-    const [endTimeString, setEndTimeString] = useState('2022-04-9 01:00:00')
+    // Update them as soon as the time for the round to finish is received.
+    const [minutes, setMinutes] = useState(5);
+    const [seconds, setSeconds] = useState(0);
 
     useEffect(() => {
         socket.on('play_game', receiveGameResults);
@@ -52,11 +54,6 @@ function Game() {
         }
         socket.emit("join_room", payload);
     }, []);
-
-    const endTime = useMemo(() => {
-        const editedString = endTimeString.replace(' ', 'T')
-        new Date(editedString + "Z")
-    }, [endTimeString]);
 
     const drawHandListener = (data) => {
         console.log(data)
@@ -85,7 +82,7 @@ function Game() {
             <Helmet>
                 <title>Game</title>
             </Helmet>
-            <CountdownTimer endTime={endTime} />
+            <CountdownTimer seconds={seconds} minutes={minutes} />
             <div className="game-container">
                 <PlayerCard type="OPPONENT" name={opponentUsername} profileImage={player1Image} />
                 <PokerTable opponentHand={opponentHand} myHand={myHand} flops={flops} />

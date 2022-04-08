@@ -16,20 +16,16 @@ const SingleTimeItem = (props) => {
 }
 
 function CountdownTimer(props) {
-    const initialSeconds = new Date(props.endTime - new Date()).getSeconds();
-    const initialMinute = new Date(props.endTime - new Date()).getMinutes();
-    const [minutes, setMinutes] = useState(initialMinute);
-    const [seconds, setSeconds] = useState(initialSeconds);
+    const [minutes, setMinutes] = useState(props.minutes);
+    const [seconds, setSeconds] = useState(props.seconds);
     useEffect(() => {
         let myInterval = setInterval(() => {
-            console.log(seconds)
-            console.log(minutes)
             if (seconds > 0) {
                 setSeconds(seconds - 1);
             }
             if (seconds === 0) {
                 if (minutes === 0) {
-                    clearInterval(myInterval)
+                    // clearInterval(myInterval)
                 } else {
                     setMinutes(minutes - 1);
                     setSeconds(59);
@@ -40,6 +36,11 @@ function CountdownTimer(props) {
             clearInterval(myInterval);
         };
     }, [seconds, minutes]);
+
+    useEffect(() => {
+        setSeconds(props.seconds)
+        setMinutes(props.minutes)
+    }, [props.seconds, props.minutes])
 
     return (
         <div className="timer-wrapper">
