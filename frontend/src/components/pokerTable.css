@@ -1,0 +1,41 @@
+
+.play-table{
+    height: max-content;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 30rem;
+    width: 60rem;
+}
+
+
+.play-table>div{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    height: 35%;
+}
+
+.hand-cards{
+    bottom: 0;
+}
+
+.hand-cards, .flops-cards{
+    display: flex;
+    flex-direction: row;
+}
+
+.card{
+    max-height: 100%;
+    display: block;
+    margin: 1rem;
+}
+
+.flops-cards>.card{
+    max-width: 20%;
+}
+
+.hand-cards>.card{
+    max-width: 50%;
+}

@@ -1,0 +1,41 @@
+.game-container {
+    width: 100%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.timer-wrapper {
+    float: right;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.buttons {
+    justify-content: center;
+    align-items: center;
+    margin-top: -8rem;
+}
+
+.buttons>.draw-hand {
+    float: left;
+    font-size: 1.5rem;
+    margin-left: 15rem;
+    background: #FFC728;
+    border-radius: 8px;
+    padding: 1rem 2rem;
+}
+
+.buttons>.next-game {
+    float: right;
+    font-size: 1.5rem;
+    margin-right: 15rem;
+    color: #FFC728;
+    border-radius: 8px;
+    border-color: #FFC728;
+    padding: 1rem 2rem;
+    background: None;
+}

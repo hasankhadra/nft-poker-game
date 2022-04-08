@@ -37,7 +37,6 @@ function App() {
                     </Routes>
                 </SocketContext.Provider>
             </Layout>
-
         </BrowserRouter>
     );
 }

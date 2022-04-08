@@ -23,10 +23,11 @@ function Home() {
                 // width: "80%",
                 display: "flex", 
                 flexDirection: "row",
-                flexWrap: "wrap"
+                flexWrap: "wrap",
+                marginTop: "5rem"
             }}>
                 <div className="text-box flex-item-left">
-                    <h3>
+                    <h3 className='white'>
                         Make your NFT worth more through <span className='yellow'>Poker Game</span>
                     </h3>
                     <p className='white'>

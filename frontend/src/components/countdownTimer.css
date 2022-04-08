@@ -1,0 +1,38 @@
+.timer-wrapper {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    margin-right: 5rem;
+    margin-bottom: -3rem;
+}
+
+.time-boxes {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+}
+
+.upper-number-box {
+    margin-top: .3rem;
+    font-family: 'Josefin Sans';
+    font-size: 1.3rem;
+    background: rgba(255, 199, 40, 0.05);
+    border: 1px solid #FFC728;
+    box-sizing: border-box;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    color: white;
+    padding: .3rem;
+}
+
+.lower-type-box {
+    background: #FFC728;
+    color: black;
+    padding: .3rem;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}

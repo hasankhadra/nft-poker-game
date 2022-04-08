@@ -5,12 +5,12 @@
     height: 75%;
     justify-content: center;
     align-items: center;
-    padding: 0px 15px;
+    padding: 0px 0.9rem;
     border: 1px solid #616268;
     overflow: auto;
-    margin-left: -5px;
+    margin-left: -.3rem;
     width: 100%;
-    padding: 0px 10px;
+    padding: 0px 0.6rem;
 }
 
 .nfts-table>table{
@@ -19,7 +19,7 @@
 
 .nfts-table::-webkit-scrollbar {
     width: 0.4em;
-    margin-left: 10px;
+    margin-left: .6px;
 }
 
 .nfts-table::-webkit-scrollbar-track {
@@ -40,7 +40,7 @@ table {
 
 th, td {
     text-align: center;
-    padding: 8px;
+    padding: .5rem;
     background: #4C4F58;
 }
 
@@ -75,15 +75,15 @@ td {
 }
 
 .pagination>p {
-    margin: 20px;
-    padding: 6px;
+    margin: 1.25rem;
+    padding: 0.4rem;
     border-radius: 2px;
     color: white;
     font-family: 'Proxima Nova';
     font-style: normal;
     font-weight: 400;
-    font-size: 14px;
-    line-height: 14px;
+    font-size: .9rem;
+    line-height: 0.9rem;
 }
 
 .pagination>p:not(.dots, .all-pages):hover {

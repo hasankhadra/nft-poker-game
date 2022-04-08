@@ -1,20 +1,37 @@
 
 import React from "react";
-import { useEffect, useState, useCallback, useContext } from "react";
+import './game.css'
+import { useEffect, useState, useCallback, useContext, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { SocketContext } from '../contexts/socket';
 import { Helmet } from "react-helmet";
 
 import PlayerCard from '../components/playerCard';
-import Table from '../components/table';
+import PokerTable from '../components/pokerTable';
+import CountdownTimer from '../components/countdownTimer'
 
+import player1Image from '../assets/nfts/nft1.png'
+import player2Image from '../assets/nfts/nft2.png'
+
+import backgroundImg from '../assets/backgrounds/background.png';
 
 function Game() {
     let { gameId } = useParams();
     const socket = useContext(SocketContext);
 
     const [winner, setWinner] = useState(-1);
-    const [myHand, setMyHand] = useState([])
+
+    // Update this to a list of empty strings (the important thing is to have 2 as the length of the hand, 5 as the flops length)
+    // This will make the cards face-down.
+    const [myHand, setMyHand] = useState(["4C", "1"]);
+    const [opponentHand, setOpponentHand] = useState(["2D", "KS"]);
+    const [flops, setFlops] = useState(["2D", "KS", "TC", '8S', '6H']);
+
+    // Change initial values to empty and get them from the calls.
+    const [opponentUsername, setOpponentUsername] = useState('james_perterss')
+    const [myUsername, setMyUsername] = useState('makelew_sasa342')
+
+    const [endTimeString, setEndTimeString] = useState('2022-04-9 01:00:00')
 
     useEffect(() => {
         socket.on('play_game', receiveGameResults);
@@ -28,6 +45,7 @@ function Game() {
 
     }, [winner,])
 
+    // This should listen to the event where the game starts and ends etc.
     useEffect(() => {
         const payload = {
 
@@ -35,23 +53,58 @@ function Game() {
         socket.emit("join_room", payload);
     }, []);
 
-    const opponent = {
-        username: "james_perterss"
+    const endTime = useMemo(() => {
+        const editedString = endTimeString.replace(' ', 'T')
+        new Date(editedString + "Z")
+    }, [endTimeString]);
+
+    const drawHandListener = (data) => {
+        console.log(data)
+        // update my hand.
     }
 
-    const username = "makelew_sasa342";
+    // When both player drew their hands.
+    const gameOverListener = (data) => {
+        console.log(data)
+        // update winner.
+    }
+
+    // This should just emit the draw hand event.
+    const handleDrawHand = () => {
+
+    }
+
+    // This should route to the next game.
+    // This is done by emitting the event getNextGame.
+    const handleNextGame = () => {
+
+    }
 
     return (
-        <React.Fragment>
+        <div style={{ backgroundImage: `url(${backgroundImg})`, backgroundColor: "#1A1A1C" }}>
             <Helmet>
                 <title>Game</title>
             </Helmet>
-            <div className="container">
-                <PlayerCard type="OPPONENT" name={opponent.username} />
-                <Table topCards={[]} />
-                <PlayerCard type="YOU" name={username} />
+            <CountdownTimer endTime={endTime} />
+            <div className="game-container">
+                <PlayerCard type="OPPONENT" name={opponentUsername} profileImage={player1Image} />
+                <PokerTable opponentHand={opponentHand} myHand={myHand} flops={flops} />
+                <PlayerCard type="YOU" name={myUsername} profileImage={player2Image} />
             </div>
-        </React.Fragment>
+            <div className="buttons">
+                <button className="draw-hand" onClick={handleDrawHand}>
+                    Draw Hand
+                </button>
+                {winner === -1 ?
+                    <button className="next-game" disabled onClick={handleNextGame}>
+                        Next Game &#8594;
+                    </button> :
+                    <button onClick={handleNextGame}>
+                        Next Game &#8594;
+                    </button>
+                }
+            </div>
+        </div>
     )
 }
 
