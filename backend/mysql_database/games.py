@@ -65,7 +65,6 @@ class Games:
         conn.commit()
         conn.close()  
 
-
     def add_game(self, game_info: list):
         """
         :param game_info: list containing [round_id, player1_id, player2_id]

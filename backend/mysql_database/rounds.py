@@ -74,9 +74,12 @@ class Rounds:
         
         results = crsr.fetchall()
         
-        results = json.loads(self._get_json_format(crsr, results))
+        results = self._get_json_format(crsr, results)
         
         conn.close()
+        
+        if len(result) == 0:
+            return None
         
         cur_round_index = -1
         
