@@ -40,6 +40,7 @@ tiers_distribution = get_tiers_distribution()
 scheduler = BackgroundScheduler()
 
 def schedule_round():
+    print("Running the scheduler")
     tournaments_id = tournaments_instance.get_current_tournament_id()
     round_players = players_instance.get_players(tournament_id=tournaments_id)
 
@@ -65,7 +66,7 @@ def add_round(data: dict):
     start_time = data["start_time"]
     end_time = data["end_time"]
     public_address = data["public_address"]
-    
+    print(start_time, end_time)
     # TODO check the public_address
     cur_round = rounds_instance.get_cur_round()
     if cur_round:
@@ -73,8 +74,9 @@ def add_round(data: dict):
     else:
         rounds_instance.add_round([1, start_time, end_time])
     
-    start_time = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S') - timedelta(days=0, hours=0, minutes=5)
+    start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')# - timedelta(days=0, hours=0, minutes=5)
     scheduler.add_job(func=schedule_round, trigger="date", run_date=start_time)
+    scheduler.start()
 
 @socketio.on('round_info')
 def round_info():

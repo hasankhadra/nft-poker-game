@@ -15,10 +15,10 @@ players_instance = Players(DB_CONFIG_FILE)
 num_players_instance = Num_players(DB_CONFIG_FILE)
 import random
 
-tournaments_instance.add_tournament([3])
+# tournaments_instance.add_tournament([3])
 
-rounds_instance.add_round([1, '2022-5-6 06:00:00', '2022-5-6 09:00:00'])
+rounds_instance.add_round([1, '2022-03-08 06:00:00', '2022-03-09 09:00:00'])
 
-for i in range(300):
-    id = players_instance.add_player([f"nft{i + 4}", f"address_{i + 5}", f"user_{i + 6}", f"tier_{i}"])
+for i in range(4):
+    id = players_instance.add_player([f"nft{i + 1}", f"address_{i + 1}", f"user_{i + 1}", f"tier_{i + 1}"])
     players_instance.update({"id": id, "bounty": random.random() * 200.0})
