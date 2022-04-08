@@ -2,6 +2,7 @@ import Footer from "../../components/footer";
 import backgroundImg from '../../assets/backgrounds/background.png';
 import { useState, useContext, useCallback } from "react";
 import { SocketContext } from '../../contexts/socket';
+import {getAddress} from '../../utils/metamaskAuth';
 
 
 function AdminPanel() {
@@ -9,12 +10,13 @@ function AdminPanel() {
     const [endTime, setEndTime] = useState('');
     const socket = useContext(SocketContext);
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
+        await window.ethereum.enable();
         let payload = {
             start_time: startTime,
             end_time: endTime,
-            public_address: "TODO"
+            public_address: await getAddress()
         }
         socket.emit("add_round", payload);
     };

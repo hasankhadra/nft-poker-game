@@ -27,6 +27,7 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 app.config["SECRET_KEY"] = os.environ["SECRET_KEY"]
+ADMIN_ADDRESS = os.environ["ADMIN_ADDRESS"]
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 tournaments_instance = Tournaments(DB_CONFIG_FILE)
@@ -66,7 +67,9 @@ def add_round(data: dict):
     start_time = data["start_time"]
     end_time = data["end_time"]
     public_address = data["public_address"]
-    print(start_time, end_time)
+    
+    assert public_address == ADMIN_ADDRESS, "You have no access to add a round"
+    
     # TODO check the public_address
     cur_round = rounds_instance.get_cur_round()
     if cur_round:
