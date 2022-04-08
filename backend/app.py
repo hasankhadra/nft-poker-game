@@ -1,4 +1,5 @@
 import json
+from ntpath import join
 from flask import Flask, request
 from flask_socketio import SocketIO, join_room, leave_room, rooms, ConnectionRefusedError
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -11,8 +12,10 @@ from mysql_database.games import Games
 from mysql_database.games_draws import GamesDraws
 from mysql_database.players import Players
 from mysql_database.num_players import Num_players
+from datetime import datetime, timedelta
 
 from poker_logic.dealer import draw_combo, draw_the_flops
+
 from poker_logic.round_matching import get_round_matching
 from poker_logic.game import play
 
@@ -24,6 +27,7 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 app.config["SECRET_KEY"] = os.environ["SECRET_KEY"]
+ADMIN_ADDRESS = os.environ["ADMIN_ADDRESS"]
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 tournaments_instance = Tournaments(DB_CONFIG_FILE)
@@ -33,20 +37,57 @@ games_draws_instance = GamesDraws(DB_CONFIG_FILE)
 players_instance = Players(DB_CONFIG_FILE)
 num_players_instance = Num_players(DB_CONFIG_FILE)
 
-
 tiers_distribution = get_tiers_distribution()
+scheduler = BackgroundScheduler()
 
 def schedule_round():
-    # TODO
-    pass
+    print("Running the scheduler")
+    tournaments_id = tournaments_instance.get_current_tournament_id()
+    round_players = players_instance.get_players(tournament_id=tournaments_id)
 
-if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-    pass
-    # TODO set all the rounds
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(func=schedule_round, trigger="interval", seconds=10)
+    round_id = rounds_instance.get_cur_round()["id"]
+    games = get_round_matching(round_players)
+    games_instance.add_round_games(round_id, games)
+
+# if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+#     pass
+#     # TODO set all the rounds
+#     scheduler.start()
+
+@socketio.on("add_round")
+def add_round(data: dict):
+    """
+    :param data: dict containing 
+    {
+        start_time: str,
+        end_time: str,
+        public_address: str
+    }
+    """
+    start_time = data["start_time"]
+    end_time = data["end_time"]
+    public_address = data["public_address"]
+    
+    assert public_address == ADMIN_ADDRESS, "You have no access to add a round"
+    
+    # TODO check the public_address
+    cur_round = rounds_instance.get_cur_round()
+    if cur_round:
+        rounds_instance.add_round([cur_round["round_num"] + 1, start_time, end_time])
+    else:
+        rounds_instance.add_round([1, start_time, end_time])
+    
+    start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')# - timedelta(days=0, hours=0, minutes=5)
+    scheduler.add_job(func=schedule_round, trigger="date", run_date=start_time)
     scheduler.start()
 
+@socketio.on('round_info')
+def round_info():
+    cur_round = rounds_instance.get_cur_round()
+    socketio.emit("round_info", {"start_time": cur_round["start_time"], 
+                                 "end_time": cur_round["end_time"],
+                                 "round_num": cur_round["round_num"]})
+    
 @socketio.on("register")
 def register(data: dict):
     """
@@ -147,10 +188,27 @@ def on_leave(data):
     """
     leave_room(data['room'])
 
-@socketio.on("get_rooms")
-def get_rooms(data: dict):
-    # TODO return all rooms this player will join during this round BLOCKCHAIN
-    pass
+@socketio.on("get_next_room")
+def get_next_room(data: dict):
+    """
+    :param data: dict
+    {
+        player_id: int
+    }
+    """
+    
+    player_id = data["player_id"]
+    
+    cur_round_id = rounds_instance.get_cur_round()["id"]
+    all_games = games_instance.get_games_from_round([cur_round_id])
+    
+    player_rooms = [f"room_{game['id']}" for game in all_games if ((game["player1_id"] == player_id or game["player2_id"] == player_id) and (not game["winner_id"]))]
+
+    if len(player_rooms):
+        join(player_rooms[0])
+    else:
+        socketio.emit("get_next_room", {"room": "ERROR"})
+    socketio.emit("get_next_room", {"room": player_rooms[0]})
 
 @socketio.on("stake_nft")
 def stake_nft(data: dict):

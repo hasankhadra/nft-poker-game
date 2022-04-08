@@ -74,16 +74,19 @@ class Rounds:
         
         results = crsr.fetchall()
         
-        results = json.loads(self._get_json_format(crsr, results))
+        results = self._get_json_format(crsr, results)
         
         conn.close()
+        
+        if len(results) == 0:
+            return None
         
         cur_round_index = -1
         
         for index in range(len(results)):
             result = results[index]
-            end_time = datetime.strptime(result["end_time"], '%Y-%m-%d %H:%M:%S')
-            start_time = datetime.strptime(result["start_time"], '%Y-%m-%d %H:%M:%S')
+            end_time = result["end_time"] #datetime.strptime(result["end_time"], '%Y-%m-%d %H:%M:%S')
+            # start_time = datetime.strptime(result["start_time"], '%Y-%m-%d %H:%M:%S')
             
             cur_time = datetime.now()
             
@@ -94,7 +97,7 @@ class Rounds:
                 cur_round_index = index
                 continue
             
-            if end_time < datetime.strptime(results[cur_round_index]["start_time"], '%Y-%m-%d %H:%M:%S'):
+            if end_time < results[cur_round_index]["start_time"]: #datetime.strptime(results[cur_round_index]["start_time"], '%Y-%m-%d %H:%M:%S'):
                 cur_round_index = index
             
         return results[cur_round_index]

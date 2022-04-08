@@ -54,7 +54,7 @@ class Games:
         one_row = """ (%s, %s, %s),"""
 
         query = "INSERT INTO games (round_id, player1_id, player2_id) VALUES"
-        query += one_row * len(game_info)
+        query += one_row * len(games_info)
         query = query[:-1] + ';'
 
         game_info = [(round_id, *element) for element in games_info]
@@ -64,7 +64,6 @@ class Games:
         
         conn.commit()
         conn.close()  
-
 
     def add_game(self, game_info: list):
         """

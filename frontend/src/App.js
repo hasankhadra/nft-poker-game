@@ -16,6 +16,7 @@ import Game from './pages/game';
 import Leaderboard from './pages/leaderboard';
 import GameGuide from './pages/gameGuide.js'
 import Layout from "./components/layout";
+import AdminPanel from "./pages/admin/adminPanel"
 
 function App() {
     return (
@@ -25,6 +26,7 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Navigate to="/home" />} />
                         <Route path="/home" element={<Home />} />
+                        <Route path="/admin-panel" element={<AdminPanel />} />
                         <Route path="/leaderboard" element={<Leaderboard />} />
                         <Route path="/lobby" element={<Lobby />} />
                         <Route path="/register" element={<Register />} />
