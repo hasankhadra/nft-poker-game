@@ -1,8 +1,6 @@
 
 import { useEffect, useState, useCallback, useContext } from "react";
-
-import Footer from '../components/footer';
-import Header from '../components/header';
+import {Helmet} from "react-helmet";
 
 import backgroundImg from '../assets/backgrounds/background.png';
 
@@ -87,7 +85,9 @@ function Leaderboard() {
 
     return (
         <div style={{ height: '100vh', backgroundColor: "#25262A", display: "flex", flexDirection: "column" }}>
-            <Header pageName={'leaderboard'} showLoginRegister={true}/>
+            <Helmet>
+                <title>Leaderboard</title>
+            </Helmet>
             <div style={{
                 backgroundImage: `url(${backgroundImg})`,
                 height: "80%",
@@ -109,8 +109,6 @@ function Leaderboard() {
                 </p>
                 <PlayersTable players={players} paginate={paginate} />
             </div>
-
-            <Footer />
         </div>
     )
 }

@@ -11,10 +11,15 @@
     font-family: 'Josefin Sans';
     font-style: normal;
     font-weight: 400;
-    font-size: 16px;
+    font-size: 1rem;
     color: #FFFFFF;
-    margin-top: 1%;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin-bottom: 1rem;
 
+    margin-top: 1%;
+    position: fixed;
     display:flex; 
     flex-direction: row; 
     justify-content: center; 
@@ -22,12 +27,12 @@
 }
 
 .copyrights {
-    margin-right: 200px;
+    margin-right: 15rem;
     left: 0;
 }
 
 .privacy-service {
-    margin-left: 100px;
+    margin-left: 7rem;
     display:flex; 
     flex-direction: row; 
     justify-content: center; 
@@ -38,7 +43,7 @@
     font-family: 'Josefin Sans';
     font-style: normal;
     font-weight: 400;
-    font-size: 16px;
+    font-size: 1rem;
     color: #FFFFFF;
-    margin: 0 10px;
+    margin: 0 0.7rem;
 }
