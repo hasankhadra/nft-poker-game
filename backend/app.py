@@ -339,14 +339,24 @@ def draw_combo(data):
     nft_tier = players_instance.get_player_by({"id": player_id}, get_json_format=True)[0]["nft_tier"]
 
     
+    
     # get opponent combo if any
     cur_game = games_instance.get_game([game_id])[0]
+
+
+    if player_id == cur_game[2]:
+        opp_id = cur_game[3]
+    else:
+        opp_id = cur_game[2]
     
-    if cur_game[2] == player_id and cur_game[4] != "":
-            player_combo = cur_game[4].upper()
+    if cur_game[2] == player_id and cur_game[4]:
+        player_combo = cur_game[4].upper()
+        opp_combo = cur_game[5].upper()
+        
     
-    elif cur_game[3] == player_id and cur_game[5] != "":
+    elif cur_game[3] == player_id and cur_game[5]:
         player_combo = cur_game[5].upper()
+        opp_combo = cur_game[4].upper()
     
     else:
         opp_combo = cur_game[5] if player_id == cur_game[2] else cur_game[4]
@@ -361,9 +371,22 @@ def draw_combo(data):
     socketio.emit('draw_combo', {"player_combo": [player_combo[:2], player_combo[2:]]})
     cur_game = games_instance.get_game([game_id])[0]
     
-    if cur_game[4] != "" and cur_game[5] != "":
+    print(cur_game[4], cur_game[5])
+    if cur_game[4] and cur_game[5]:
+        print("inside if")
         results = play_game({"game_id": game_id})
-        socketio.emit("play_game", {"results": results}, to="room_"+str(cur_game[0]))
+        results['player_id'] = player_id
+        results['opponent_id'] = opp_id
+        results['opponent_combo'] = [opp_combo[:2], opp_combo[2:]]
+        socketio.emit("play_game", {"results": results})
+
+        results_copy = results.copy()
+        results_copy['player_id'] = opp_id
+        results_copy['opponent_id'] = player_id
+        results['opponent_combo'] = [player_combo[:2], player_combo[2:]]
+        
+        socketio.emit("play_game", {"results": results_copy}, to="room_"+str(cur_game[0]), include_self=False)
+        # to="room_"+str(cur_game[0])
 
 def play_game(data: dict):  
     """
@@ -396,10 +419,13 @@ def play_game(data: dict):
     
     player1_combo = game["player1_combo"]
     player2_combo = game["player2_combo"]
-    the_flops = game["flops"]
+    if not game['flops']:
+        the_flops = dealer.draw_the_flops(player1_combo, player2_combo)
+        games_instance.update({"id": game_id, "flops": the_flops})
+    else:
+        the_flops = game['flops']
     
     game_result: dict = play(player1_combo, player2_combo, the_flops)
-    print(game_result.keys())
     if game_result["winner"] != -1:
         games_instance.update({
             "id": game["id"], 
@@ -439,7 +465,6 @@ def play_game(data: dict):
                                "winner_id": game["player1_id"] if game_result["winner"] == 1 else game["player2_id"]})
     
     game_result["flops"] = the_flops.upper().split(",")
-    print(game_result)
     return game_result
 
 @socketio.on("draw_the_flops")

@@ -14,7 +14,7 @@ const cardsImages = importAll(require.context('../assets/cards', false, /\.png$/
 function PokerTable(props) {
 
     const cardsToImages = (cardsNames) => {
-        return cardsNames.map(item => <img className="card" src={cardsImages[item] || cardsImages["BACK"]} />)
+        return cardsNames.map((item, index) => <img key={index} className="card" src={cardsImages[item] || cardsImages["BACK"]} />)
     }
 
     return (

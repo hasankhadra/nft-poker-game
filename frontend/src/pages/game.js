@@ -4,7 +4,6 @@ import './game.css'
 import { useEffect, useState, useCallback, useContext, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { SocketContext } from '../contexts/socket';
-import { Helmet } from "react-helmet";
 
 import PlayerCard from '../components/playerCard';
 import PokerTable from '../components/pokerTable';
@@ -17,6 +16,7 @@ import backgroundImg from '../assets/backgrounds/background.png';
 
 import { getAddress } from '../utils/metamaskAuth';
 import { VoidSigner } from "ethers";
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 
 function Game() {
     // This is to be used in the join game event.
@@ -36,10 +36,10 @@ function Game() {
     const [myHandName, setMyHandName] = useState("");
 
     const [flops, setFlops] = useState(["", "", "", "", ""]);
-    
+
     const [playerId, setPlayerId] = useState(0);
     const [opponentId, setOpponentId] = useState(0);
-    
+
     // Change initial values to empty and get them from the calls.
     const [opponentUsername, setOpponentUsername] = useState('')
     const [myUsername, setMyUsername] = useState('')
@@ -53,7 +53,7 @@ function Game() {
         socket.on('draw_combo', drawComboListener);
         socket.on('join_room', joinRoomListener)
         return () => {
-            socket.off('play_game', receiveGameResults);
+            // socket.off('play_game', receiveGameResults);
             socket.off('draw_combo', drawComboListener);
             socket.off('join_room', joinRoomListener);
         }
@@ -73,20 +73,25 @@ function Game() {
         setMyHand(response.player_combo);
     }
 
-    const receiveGameResults = useCallback((response) => {
+    const receiveGameResults = (response) => {
+        console.log("what")
         let results = response.results
-        console.log("Game Results " + playerId)
-        if(results[playerId].winner)
+        let myId = results.player_id
+        let otherId = results.opponent_id
+
+        if (results[myId].winner){
+            alert("YOU WON THIS GAME!")
             setWinner(1);
-        else setWinner(2);
-
+        }
+        else {
+            alert("YOU LOST THIS GAME!")
+            setWinner(2);
+        }
         setFlops(results.flops);
-        setOpponentHand(results[opponentId].best_hand);
-        setOpponentHandName(results[opponentId].best_hand_name);
-
-        setMyHandName(results[playerId].best_hand_name);
-
-    }, [playerId, opponentId, winner])
+        setOpponentHand(results.opponent_combo);
+        setOpponentHandName(results[otherId].best_hand_name);
+        setMyHandName(results[myId].best_hand_name);
+    }
 
     // This should listen to the event where the game starts and ends etc.
     useEffect(async () => {
@@ -105,9 +110,10 @@ function Game() {
         console.log("Draw hand " + playerId);
         const payload = {
             public_address: await getAddress(),
-            game_id: gameId
+            game_id: gameId,
+            player_id: playerId
         }
-
+        console.log(playerId)
         socket.emit("draw_combo", payload);
     }
 
@@ -118,30 +124,34 @@ function Game() {
     }
 
     return (
-        <div style={{ backgroundImage: `url(${backgroundImg})`, backgroundColor: "#1A1A1C" }}>
-            <Helmet>
-                <title>Game</title>
-            </Helmet>
-            <CountdownTimer seconds={seconds} minutes={minutes} />
-            <div className="game-container">
-                <PlayerCard type="OPPONENT" name={opponentUsername} profileImage={player1Image} />
-                <PokerTable opponentHand={opponentHand} myHand={myHand} flops={flops} />
-                <PlayerCard type="YOU" name={myUsername} profileImage={player2Image} />
-            </div>
-            <div className="buttons">
-                <button className="draw-hand" onClick={handleDrawHand}>
-                    Draw Hand
-                </button>
-                {winner === -1 ?
-                    <button className="next-game" disabled onClick={handleNextGame}>
-                        Next Game &#8594;
-                    </button> :
-                    <button className="next-game" onClick={handleNextGame}>
-                        Next Game &#8594;
+        <HelmetProvider>
+
+            <div style={{ backgroundImage: `url(${backgroundImg})`, backgroundColor: "#1A1A1C" }}>
+                <Helmet>
+                    <title>Game</title>
+                </Helmet>
+                <CountdownTimer seconds={seconds} minutes={minutes} />
+                <div className="game-container">
+                    <PlayerCard type="OPPONENT" name={opponentUsername} profileImage={player1Image} />
+                    <PokerTable opponentHand={opponentHand} myHand={myHand} flops={flops} />
+                    <PlayerCard type="YOU" name={myUsername} profileImage={player2Image} />
+                </div>
+                <div className="buttons">
+                    <button className="draw-hand" onClick={handleDrawHand}>
+                        Draw Hand
                     </button>
-                }
+                    {winner === -1 ?
+                        <button className="next-game" disabled onClick={handleNextGame}>
+                            Next Game &#8594;
+                        </button> :
+                        <button className="next-game" onClick={handleNextGame}>
+                            Next Game &#8594;
+                        </button>
+                    }
+                </div>
             </div>
-        </div>
+
+        </HelmetProvider>
     )
 }
 
