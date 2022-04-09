@@ -100,8 +100,8 @@ def draw_combo(tier: str, opp_hand: Union[str, None]) -> str:
     draw a combo for a player given his opponent hand and his tier
     :return: string denoting a combo for the given tier (e.x. "Ah5c")
     """
-    
-    with open('tiers_hands.json') as json_file:
+    print(tier, opp_hand)
+    with open('poker_logic/tiers_hands.json') as json_file:
         tier_to_combos = json.load(json_file)
     
     combo = random.choice(tier_to_combos[tier])

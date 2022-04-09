@@ -192,7 +192,7 @@ def play(first_player_combo: str, second_player_combo: str, the_flops: str):
             "tie_with_hands": False
         }
         
-        return json.dumps(return_dict)
+        return return_dict
     
     elif best_hand_value2 > best_hand_value1:
         bad_beat_hand = ["Ac", "Ad", "Ah", "Kc", "Ks"]
@@ -209,7 +209,7 @@ def play(first_player_combo: str, second_player_combo: str, the_flops: str):
             "tie_with_hands": False
         }
         
-        return json.dumps(return_dict)
+        return return_dict
         
     else:
         
@@ -251,7 +251,7 @@ def play(first_player_combo: str, second_player_combo: str, the_flops: str):
                 else:
                     return_dict["winner"] = -1
                 
-                return json.dumps(return_dict)
+                return return_dict
         
         else:
             for i in range(len(full_hand1)):
@@ -274,7 +274,7 @@ def play(first_player_combo: str, second_player_combo: str, the_flops: str):
             bad_beat = get_hand_value(bad_beat_hand)[0] <= best_hand_value1
             return_dict["bad_beat"] = bad_beat
         
-        return json.dumps(return_dict)
+        return return_dict
                 
     
 if __name__ == "__main__":
