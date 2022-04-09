@@ -112,14 +112,6 @@ def register(data: dict):
     num_players_instance.increase_players_num()
     
     socketio.emit("register", {"response": "OK"})
-
-    if num_players_instance.get_cur_count() == TOTAL_PLAYERS:
-        tournaments_id = tournaments_instance.get_current_tournament_id()
-        round_players = players_instance.get_players(tournament_id=tournaments_id)
-
-        round_id = rounds_instance.get_cur_round()["id"]
-        games = get_round_matching(round_players)
-        games_instance.add_round_games(round_id, games)
         
 @socketio.on("get_nfts_info")
 def nfts_info(data: dict):
@@ -373,7 +365,7 @@ def draw_combo(data):
         results = play_game({"game_id": game_id})
         socketio.emit("play_game", {"results": results}, to="room_"+str(cur_game[0]))
 
-def play_game(data: dict):
+def play_game(data: dict):  
     """
     return the result of the game between two players
     :param data: dict

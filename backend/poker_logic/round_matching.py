@@ -39,6 +39,7 @@ def shuffle_games(games, num_actual_players):
         
 
 def get_round_matching(round_players: Tuple) -> List[Tuple]:
+    print(round_players)
     """
     A method to get a round matching given the players in the round. The returned
     value is a list of games, where each game is of the format (player1_id, player2_id).
@@ -80,5 +81,6 @@ def get_round_matching(round_players: Tuple) -> List[Tuple]:
                 cur_players.add(second_max_player)
 
     games = shuffle_games(games, num_actual_players)
+    print(games)
     player_id_games = [(game[0][1], game[1][1]) for game in games]
     return player_id_games
