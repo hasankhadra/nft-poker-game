@@ -2,34 +2,23 @@ import React, { useEffect, useState } from "react";
 
 import './countdownTimer.css'
 
-const SingleTimeItem = (props) => {
-    return (
-        <div className="single-count-item">
-            <div className="upper-number-box">
-                {props.number}
-            </div>
-            <div className="lower-type-box">
-                {props.type}
-            </div>
-        </div>
-    )
-}
+import SingleTimeItem from "./singleTimeItem";
 
 function CountdownTimer(props) {
     const [minutes, setMinutes] = useState(props.minutes);
     const [seconds, setSeconds] = useState(props.seconds);
     useEffect(() => {
         let myInterval = setInterval(() => {
-            if (seconds > 0) {
-                setSeconds(seconds - 1);
-            }
-            if (seconds === 0) {
-                if (minutes === 0) {
-                    // clearInterval(myInterval)
+            if (seconds <= 0) {
+                if (minutes <= 0) {
+
                 } else {
                     setMinutes(minutes - 1);
                     setSeconds(59);
                 }
+            }
+            else{
+                setSeconds(seconds - 1);
             }
         }, 1000)
         return () => {

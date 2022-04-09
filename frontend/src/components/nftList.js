@@ -1,7 +1,7 @@
 
 import './nftList.css'
 
-import { useEffect, useState, useCallback, useContext } from "react";
+import { useEffect, useState, useCallback, useContext, useMemo } from "react";
 
 import arrowLeft from '../assets/arrows/vector-l.png'
 import arrowRight from '../assets/arrows/vector-r.png'
@@ -10,13 +10,18 @@ import arrowRight from '../assets/arrows/vector-r.png'
 function NftList(props) {
 
     const [curPage, setCurPage] = useState(1);
+
+    const maxPage = useMemo(() => {
+        return Math.max(Math.ceil(props.nfts.length / props.paginate), 1);
+    }, [props.paginate, props.nfts]);
+
     return (
 
-        <div style={{ width: "100%", height: "100%" }}>
+        <div style={{ width: "80%", height: "100%" }}>
             <div className="nfts-table">
                 <table style={{ width: "100%" }}>
                     <tr>
-                        {/* <th className='body-large'>Rank</th> */}
+                        <th className='body-large'>#</th>
                         <th className='body-large'>NFT</th>
                         <th className='body-large'>Username</th>
                         <th className='body-large'>Linked Tier</th>
@@ -25,11 +30,11 @@ function NftList(props) {
                         <th className='body-large'>Stake</th>
                     </tr>
                     {
-                        props.nfts.map(element => {
+                        props.nfts.map((element, index) => {
                             if (curPage === element.page)
                                 return (
                                     <tr key={element.id}>
-                                        {/* <td className='body-large'>{element.rank}</td> */}
+                                        <td className='body-large'>{index}</td>
                                         <td className='body-large'>{element.nft_id}</td>
                                         <td className='body-large'>{element.username}</td>
                                         <td className='body-large'>{ }</td>
@@ -57,13 +62,13 @@ function NftList(props) {
 
                 {<p style={{ background: "#4C4F58" }} onClick={() => { }}> {curPage}</p>}
 
-                {curPage >= Math.ceil(props.nfts.length / props.paginate) ? null : <p onClick={() => setCurPage(prev => Math.min(Math.ceil(props.nfts.length / props.paginate), prev + 1))}> {curPage + 1}</p>}
-                {curPage >= Math.ceil(props.nfts.length / props.paginate) - 1 ? null : <p onClick={() => setCurPage(prev => Math.min(Math.ceil(props.nfts.length / props.paginate), prev + 2))}> {curPage + 2}</p>}
+                {curPage >= maxPage ? null : <p onClick={() => setCurPage(prev => Math.min(maxPage, prev + 1))}> {curPage + 1}</p>}
+                {curPage >= maxPage - 1 ? null : <p onClick={() => setCurPage(prev => Math.min(maxPage, prev + 2))}> {curPage + 2}</p>}
 
-                {curPage >= Math.ceil(props.nfts.length / props.paginate) - 3 ? null : <p className='dots'>...</p>}
-                {curPage >= Math.ceil(props.nfts.length / props.paginate) - 2 ? null : <p onClick={() => setCurPage(Math.ceil(props.nfts.length / props.paginate))}>{Math.ceil(props.nfts.length / props.paginate)}</p>}
+                {curPage >= maxPage - 3 ? null : <p className='dots'>...</p>}
+                {curPage >= maxPage - 2 ? null : <p onClick={() => setCurPage(maxPage)}>{maxPage}</p>}
 
-                <p className='increment' onClick={() => setCurPage(prev => Math.min(Math.ceil(props.nfts.length / props.paginate), prev + 1))}><img src={arrowRight} alt="right-arrow" /></p>
+                <p className='increment' onClick={() => setCurPage(prev => Math.min(maxPage, prev + 1))}><img src={arrowRight} alt="right-arrow" /></p>
             </div>
         </div>
     )

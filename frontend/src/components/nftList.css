@@ -19,7 +19,7 @@
 
 .nfts-table::-webkit-scrollbar {
     width: 0.4em;
-    margin-left: .6px;
+    margin-left: .03rem;
 }
 
 .nfts-table::-webkit-scrollbar-track {

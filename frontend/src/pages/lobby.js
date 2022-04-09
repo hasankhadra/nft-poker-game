@@ -1,9 +1,9 @@
 
 import { useEffect, useState, useCallback, useContext } from "react";
-import {Helmet} from "react-helmet";
+import { Helmet } from "react-helmet";
 import io from 'socket.io-client';
 
-import {getAddress} from '../utils/metamaskAuth';
+import { getAddress } from '../utils/metamaskAuth';
 
 import ProfileInfo from '../components/profileInfo';
 import NftList from '../components/nftList';
@@ -12,6 +12,7 @@ import { SocketContext } from '../contexts/socket';
 
 import backgroundImg from '../assets/backgrounds/background.png';
 
+import NextRoundTimer from '../components/nextRoundTimer'
 
 
 function Lobby() {
@@ -101,27 +102,18 @@ function Lobby() {
     }
 
     return (
-        <div style={{height:'100vh', backgroundColor: "#25262A", display: "flex", flexDirection: "column"}}>
+        <div style={{
+            height: '90vh', width: "100vw", backgroundImage: `url(${backgroundImg})`,
+            backgroundSize: 'cover', backgroundRepeat: 'repeat', backgroundColor: "#1A1A1C",
+            display: "flex", flexDirection: "column", alignItems: "center",
+            justifyContent: "center", paddingTop: ".1rem"
+        }}>
             <Helmet>
                 <title>Lobby</title>
             </Helmet>
-            <div style={{
-                backgroundImage: `url(${backgroundImg})`,
-                height: "88%",
-                marginLeft: "10%",
-                backgroundColor: "#25262A",
-                // backgroundColor: "white",
-                backgroundSize: 'cover',
-                backgroundRepeat: 'no-repeat',
-                width: "80%",
-                display: "flex",
-                flexDirection: "column"
-            }}>
-
-                <ProfileInfo numNfts={nfts.length} numGames={getGamesNum()} totalBounties={getTotalBounties()} />
-                <h5>Next Round: It will start in (put timer here)</h5>
-                <NftList nfts={nfts} paginate={paginate} />
-            </div>
+            <ProfileInfo numNfts={nfts.length} numGames={getGamesNum()} totalBounties={getTotalBounties()} />
+            <NextRoundTimer roundNum={3} isActive />
+            <NftList nfts={nfts} paginate={paginate} />
         </div>
     )
 }

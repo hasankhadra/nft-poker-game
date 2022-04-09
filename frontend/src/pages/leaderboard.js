@@ -84,22 +84,22 @@ function Leaderboard() {
     }
 
     return (
-        <div style={{ height: '100vh', backgroundColor: "#25262A", display: "flex", flexDirection: "column" }}>
+        <div style={{ height: '90vh', width: "100vw", backgroundColor: "#1A1A1C", display: "flex", flexDirection: "column", alignContent: "center", 
+        justifyContent: "center", paddingTop: ".1rem"}}>
             <Helmet>
                 <title>Leaderboard</title>
             </Helmet>
             <div style={{
                 backgroundImage: `url(${backgroundImg})`,
                 height: "80%",
-                marginLeft: "10%",
-                // marginBottom: "10%",
-                backgroundColor: "#25262A",
-                // backgroundColor: "white",
                 backgroundSize: 'cover',
                 backgroundRepeat: 'no-repeat',
                 width: "80%",
                 display: "flex",
-                flexDirection: "column"
+                flexDirection: "column",
+                alignContent: "center", 
+                justifyContent: "center",
+                marginLeft: "10%"
             }}>
                 <h4 style={{color: "white", margin: "1% 1%", height: "10%"}}>Game Leaderboard</h4>
                 <p style={{color: "white",  margin: "2% 1%", height: "10%"}}>

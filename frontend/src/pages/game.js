@@ -99,7 +99,7 @@ function Game() {
                     <button className="next-game" disabled onClick={handleNextGame}>
                         Next Game &#8594;
                     </button> :
-                    <button onClick={handleNextGame}>
+                    <button className="next-game" onClick={handleNextGame}>
                         Next Game &#8594;
                     </button>
                 }
