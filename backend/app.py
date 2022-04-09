@@ -352,12 +352,11 @@ def draw_combo(data):
     
     if cur_game[2] == player_id and cur_game[4]:
         player_combo = cur_game[4].upper()
-        opp_combo = cur_game[5].upper()
+        opp_combo = cur_game[5]
         
-    
     elif cur_game[3] == player_id and cur_game[5]:
         player_combo = cur_game[5].upper()
-        opp_combo = cur_game[4].upper()
+        opp_combo = cur_game[4]
     
     else:
         opp_combo = cur_game[5] if player_id == cur_game[2] else cur_game[4]
@@ -374,6 +373,8 @@ def draw_combo(data):
     
     print(cur_game[4], cur_game[5])
     if cur_game[4] and cur_game[5]:
+        opp_combo = opp_combo.upper()
+
         print("inside if")
         results = play_game({"game_id": game_id})
         results['player_id'] = player_id
@@ -384,9 +385,9 @@ def draw_combo(data):
         results_copy = results.copy()
         results_copy['player_id'] = opp_id
         results_copy['opponent_id'] = player_id
-        results['opponent_combo'] = [player_combo[:2], player_combo[2:]]
+        results_copy['opponent_combo'] = [player_combo[:2], player_combo[2:]]
         
-        socketio.emit("play_game", {"results": results_copy}, to="room_"+str(cur_game[0]), include_self=False)
+        socketio.emit("play_game", {"results": results_copy}, to="room_"+str(game_id), include_self=False)
         # to="room_"+str(cur_game[0])
 
 def play_game(data: dict):  
