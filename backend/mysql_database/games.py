@@ -5,7 +5,7 @@ import json
 
 class Games:
     
-    editable_fields = ['winner_id', 'player1_hand', 'player2_hand', 'bad_beat', 'flops']
+    editable_fields = ['winner_id', 'player1_combo', 'player2_combo', 'bad_beat', 'flops']
 
     def __init__(self, config_file):
         self.db = 'nft_poker_game'
@@ -64,6 +64,35 @@ class Games:
         
         conn.commit()
         conn.close()  
+
+    def get_games_by(self, by: dict, get_json_format=None):
+        """
+        :param by: dict containing the conditions for the select statement
+        where the key is the name of the column and the value is the desired value in
+        the rows
+        """
+        
+        assert len(by.keys()) > 0
+        
+        conn, crsr = self.init()
+        
+        query = "SELECT * FROM games WHERE"
+        conditions = []
+        
+        for item, value in by.items():
+            query += f" {item} = %s AND"
+            conditions.append(value)
+        
+        query = query[:-3]
+        
+        crsr.execute(query, conditions)
+        results = crsr.fetchall()
+        
+        if get_json_format:
+            results = self._get_json_format(crsr, results)
+        
+        conn.close()
+        return results
 
     def add_game(self, game_info: list):
         """
@@ -135,11 +164,11 @@ class Games:
         for key in to_update_info:
             assert key in Games.editable_fields
 
-        this_game = self.get_game(game_id)
+        this_game = self.get_game([game_id])[0]
+        print(this_game)
 
         if 'winner_id' in to_update_info:
-            assert this_game and (to_update_info['winner_id'] == this_game[1] \
-                             or to_update_info['winner_id'] == this_game[2]) is None
+            assert this_game and (to_update_info['winner_id'] == this_game[3] or to_update_info['winner_id'] == this_game[2])
         
         
         values = list(to_update_info.values()) + [game_id]

@@ -15,6 +15,7 @@ from mysql_database.num_players import Num_players
 from datetime import datetime, timedelta
 
 from poker_logic.dealer import draw_combo, draw_the_flops
+from poker_logic import dealer
 
 from poker_logic.round_matching import get_round_matching
 from poker_logic.game import play
@@ -172,11 +173,45 @@ def on_join(data):
     """
     data: dict
     {
-        'room': room to be assigned to (str)
+        room: room to be assigned to (str)
+        game_id: int,
+        public_address: str
     }
     """
-    room = data['room']
-    join_room(room)
+    print(data)
+    game_id = data["game_id"]
+    public_address = data["public_address"]
+    room = data["room"]
+    
+    players = players_instance.get_player_by({"public_address": public_address}, get_json_format=True)
+    games = games_instance.get_games_by(by={"id": game_id}, get_json_format=True)
+    player_id = ""
+    username = ""
+    opponent_id = ""
+    
+    for player in players:
+        if player["id"] == games[0]["player1_id"]:
+            player_id = player["id"]
+            username = player["username"]
+        if player["id"] == games[0]["player2_id"]:
+            player_id = player["id"]
+            username = player["username"]
+
+
+    
+    if player_id != "":
+        join_room(room)
+        
+        if player_id == games[0]["player1_id"]:
+            opponent_id = games[0]["player2_id"]
+        else:
+            opponent_id = games[0]["player1_id"]
+        
+        opponent = players_instance.get_player_by({"id": opponent_id}, get_json_format=True)[0]
+        
+        socketio.emit("join_room", {"opponent_id": opponent["id"], "username": username, "player_id": player_id, "opponent_username": opponent["username"]})
+    else:
+        socketio.emit("join_room", {"response": "You are not allowed to access this game"})
 
 @socketio.on('leave_room')
 def on_leave(data):
@@ -288,54 +323,56 @@ def draw_combo(data):
     return a combo of a player in a game
     data: dict
     {
-        player_id: int,
+        public_address: str,
         game_id: int
     }
     """
     
     game_id = data["game_id"]
-    player_id = data["player_id"]
+    public_address = data["public_address"]
+    
+    players = players_instance.get_player_by({"public_address": public_address}, get_json_format=True)
+    games = games_instance.get_games_by(by={"id": game_id}, get_json_format=True)
+    player_id = ""
+    
+    for game in games:
+        for player in players:
+            if player["id"] == game["player1_id"]:
+                player_id = player["id"]
+            if player["id"] == game["player2_id"]:
+                player_id = player["id"]
+    
     
     # get player nft tier
-    nft_tier = players_instance.get_player_by_id([player_id])[0][5]
+    nft_tier = players_instance.get_player_by({"id": player_id}, get_json_format=True)[0]["nft_tier"]
+
     
     # get opponent combo if any
     cur_game = games_instance.get_game([game_id])[0]
-    opp_combo = cur_game[5] if player_id == cur_game[2] else cur_game[4]
     
-    player_combo = draw_combo(nft_tier, opp_combo)
+    if cur_game[2] == player_id and cur_game[4] != "":
+            player_combo = cur_game[4].upper()
     
-    # update player hand
-    player_num = "player1" if player_id == cur_game[2] else "player2"
-    games_instance.update({"id": game_id, f"{player_num}_id": player_id, f"{player_num}_combo": player_combo})
+    elif cur_game[3] == player_id and cur_game[5] != "":
+        player_combo = cur_game[5].upper()
     
-    socketio.emit('draw_combo', {"player_combo": player_combo})
+    else:
+        opp_combo = cur_game[5] if player_id == cur_game[2] else cur_game[4]
+        
+        player_combo = dealer.draw_combo(nft_tier, opp_combo)
+        
+        # update player hand
+        player_num = "player1" if player_id == cur_game[2] else "player2"
+        games_instance.update({"id": game_id, f"{player_num}_combo": player_combo.upper()})
+        player_combo = player_combo.upper()
+    
+    socketio.emit('draw_combo', {"player_combo": [player_combo[:2], player_combo[2:]]})
+    cur_game = games_instance.get_game([game_id])[0]
+    
+    if cur_game[4] != "" and cur_game[5] != "":
+        results = play_game({"game_id": game_id})
+        socketio.emit("play_game", {"results": results}, to="room_"+str(cur_game[0]))
 
-@socketio.on("draw_the_flops")
-def draw_the_flops(data: dict):
-    """
-    return the 5 cards that will be showed on the table
-    data: dict
-    {
-        game_id: int
-    }
-    """
-    game_id = data["game_id"]
-    
-    game_row = games_instance.get_game([game_id])
-    
-    player1_combo = game_row[4]
-    player2_combo = game_row[5]
-    
-    the_flops = draw_the_flops(player1_combo, player2_combo)
-    
-    games_instance.update({"id": game_id, "the_flops": the_flops})
-    
-    the_flops = the_flops.split(",")
-    
-    socketio.emit("draw_the_flops", {"the_flops": the_flops})
-
-@socketio.on("play_game")
 def play_game(data: dict):
     """
     return the result of the game between two players
@@ -349,25 +386,28 @@ def play_game(data: dict):
         player1_id: {
             best_hand: list,
             best_hand_name: str,   
-        }
+            winner: bool
+        },
         player2_id: {
             best_hand: list,
-            best_hand_name: str,   
-        }
+            best_hand_name: str,    
+            winner: bool
+        },
+        flops: list
         bad_beat: bool (True if the loser has a hand better than "AAAKK"),
         tie_with_hands: bool
     }
     """  
     game_id = data["game_id"]
     
-    game = games_instance.get_game([game_id], get_json_format=True)
+    game = games_instance.get_game([game_id], get_json_format=True)[0]
     
     player1_combo = game["player1_combo"]
     player2_combo = game["player2_combo"]
     the_flops = game["flops"]
     
     game_result: dict = play(player1_combo, player2_combo, the_flops)
-    
+    print(game_result.keys())
     if game_result["winner"] != -1:
         games_instance.update({
             "id": game["id"], 
@@ -378,7 +418,8 @@ def play_game(data: dict):
     player1_dict = {
         game["player1_id"]: {
             "best_hand": game_result["best_hand_1"],
-            "best_hand_name": game_result["best_hand_1_name"]
+            "best_hand_name": game_result["best_hand_1_name"],
+            "winner": True if game_result["winner"] == 1 else False
         }
     }
     
@@ -387,7 +428,8 @@ def play_game(data: dict):
     player2_dict = {
         game["player2_id"]: {
             "best_hand": game_result["best_hand_2"],
-            "best_hand_name": game_result["best_hand_2_name"]
+            "best_hand_name": game_result["best_hand_2_name"],
+            "winner": True if game_result["winner"] == 2 else False
         }
     }
     
@@ -404,7 +446,38 @@ def play_game(data: dict):
         games_instance.update({"id": game_id, 
                                "winner_id": game["player1_id"] if game_result["winner"] == 1 else game["player2_id"]})
     
-    socketio.emit("play_game", game_result)
+    game_result["flops"] = the_flops.upper().split(",")
+    print(game_result)
+    return game_result
+
+@socketio.on("draw_the_flops")
+def draw_the_flops(data: dict):
+    """
+    return the 5 cards that will be showed on the table
+    data: dict
+    {
+        game_id: int
+    }
+    """
+    game_id = data["game_id"]
+    
+    game_row = games_instance.get_game([game_id])[0]
+    
+    player1_combo = game_row[4]
+    player2_combo = game_row[5]
+    player1_combo ="QhTd"
+    print(player1_combo, player2_combo)
+    
+    if game_row[6] != "":
+        the_flops = game_row[6]
+    else:    
+        the_flops = dealer.draw_the_flops(player1_combo, player2_combo)
+        
+        games_instance.update({"id": game_id, "flops": the_flops})
+        
+    the_flops = the_flops.upper().split(",")
+        
+    socketio.emit("draw_the_flops", {"the_flops": the_flops})
     
 
 if __name__ == "__main__":
