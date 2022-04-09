@@ -20,7 +20,7 @@ tournaments_instance.add_tournament([3])
 rounds_instance.add_round([1, '2022-03-08 06:00:00', '2022-03-09 09:00:00'])
 num_players_instance.add_row([1])
 
-for i in range(3):
-    id = players_instance.add_player([f"nft{i + 1}", f"address_{i + 1}", f"user_{i + 1}", f"tier_{i + 1}"])
-    players_instance.update({"id": id, "bounty": random.random() * 200.0})
-    num_players_instance.increase_players_num()
+# for i in range(3):
+#     id = players_instance.add_player([f"nft{i + 1}", f"address_{i + 1}", f"user_{i + 1}", f"tier_{i + 1}"])
+#     players_instance.update({"id": id, "bounty": random.random() * 200.0})
+#     num_players_instance.increase_players_num()

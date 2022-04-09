@@ -21,7 +21,7 @@ def fix_values(round_players: Tuple):
 
 def shuffle_games(games, num_actual_players):
     if len(games) < 2:
-        return
+        return games
 
     shuffled = copy.deepcopy(games)
     iterations = num_actual_players * 4

@@ -1,5 +1,6 @@
 import json
 from ntpath import join
+from urllib.robotparser import RequestRate
 from flask import Flask, request
 from flask_socketio import SocketIO, join_room, leave_room, rooms, ConnectionRefusedError
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -87,7 +88,7 @@ def round_info():
     cur_round = rounds_instance.get_cur_round()
     socketio.emit("round_info", {"start_time": cur_round["start_time"], 
                                  "end_time": cur_round["end_time"],
-                                 "round_num": cur_round["round_num"]})
+                                 "round_num": cur_round["round_num"]}, to=request.sid)
     
 @socketio.on("register")
 def register(data: dict):
@@ -101,17 +102,17 @@ def register(data: dict):
     """
     
     if num_players_instance.get_cur_count() == TOTAL_PLAYERS:
-        socketio.emit("register", {"response": "There is no room left for new players!"})
+        socketio.emit("register", {"response": "There is no room left for new players!"}, to=request.sid)
         raise ConnectionRefusedError('There is no room left for new players!')
     
     if players_instance.exists_username([data["username"]]):
-        socketio.emit("register", {"response": """Nickname already exists!\nTry a different Nickname!"""})
+        socketio.emit("register", {"response": """Nickname already exists!\nTry a different Nickname!"""}, to=request.sid)
         raise ConnectionRefusedError("Username already exists")
     
     players_instance.add_player(["TODO_get_nft_id", data["public_address"], data["username"], tiers_distribution[num_players_instance.get_cur_count()]])
     num_players_instance.increase_players_num()
     
-    socketio.emit("register", {"response": "OK"})
+    socketio.emit("register", {"response": "OK"}, to=request.sid)
         
 @socketio.on("get_nfts_info")
 def nfts_info(data: dict):
@@ -133,7 +134,7 @@ def nfts_info(data: dict):
     
     nfts_json_format = players_instance.get_player_by(by={"public_address": public_address, "tournament_id": tournament_id}, get_json_format=True)
 
-    socketio.emit("get_nfts_info", {"nfts": nfts_json_format})
+    socketio.emit("get_nfts_info", {"nfts": nfts_json_format}, to=request.sid)
     
 @socketio.on("get_players")
 def get_players():
@@ -152,7 +153,7 @@ def get_players():
     
     print(players_json_format)
 
-    socketio.emit("get_players", {"players": players_json_format})
+    socketio.emit("get_players", {"players": players_json_format}, to=request.sid)
     
 @socketio.on('log_in_round')
 def log_in_round(data: dict):
@@ -201,9 +202,9 @@ def on_join(data):
         
         opponent = players_instance.get_player_by({"id": opponent_id}, get_json_format=True)[0]
         
-        socketio.emit("join_room", {"opponent_id": opponent["id"], "username": username, "player_id": player_id, "opponent_username": opponent["username"]})
+        socketio.emit("join_room", {"opponent_id": opponent["id"], "username": username, "player_id": player_id, "opponent_username": opponent["username"]}, to=request.sid)
     else:
-        socketio.emit("join_room", {"response": "You are not allowed to access this game"})
+        socketio.emit("join_room", {"response": "You are not allowed to access this game"}, to=request.sid)
 
 @socketio.on('leave_room')
 def on_leave(data):
@@ -233,9 +234,9 @@ def get_next_room(data: dict):
 
     if len(player_rooms):
         join(player_rooms[0])
+        socketio.emit("get_next_room", {"room": player_rooms[0]}, to=request.sid)
     else:
-        socketio.emit("get_next_room", {"room": "ERROR"})
-    socketio.emit("get_next_room", {"room": player_rooms[0]})
+        socketio.emit("get_next_room", {"room": "ERROR"}, to=request.sid)
 
 @socketio.on("stake_nft")
 def stake_nft(data: dict):
@@ -261,17 +262,17 @@ def stake_nft(data: dict):
     player_json = player_json
     
     if len(player_json) == 0:
-        socketio.emit("stake_nft", {"response": "No such player with nft"})
+        socketio.emit("stake_nft", {"response": "No such player with nft"}, to=request.sid)
         raise ConnectionRefusedError("No such player with nft")
     
     # TODO blockchain - transfer ownership of nft to smart contract
     try:
         players_instance.update({"id": player_id, "staked": True})
     except Exception as e:
-        socketio.emit("stake_nft", {"response": e})
+        socketio.emit("stake_nft", {"response": e}, to=request.sid)
 
     
-    socketio.emit("stake_nft", {"response": "OK"}) 
+    socketio.emit("stake_nft", {"response": "OK"}, to=request.sid) 
 
 @socketio.on("unstake_nft")
 def unstake_nft(data: dict):
@@ -297,17 +298,17 @@ def unstake_nft(data: dict):
     player_json = player_json
     
     if len(player_json) == 0:
-        socketio.emit("unstake_nft", {"response": "No such player with nft"})
+        socketio.emit("unstake_nft", {"response": "No such player with nft"}, to=request.sid)
         raise ConnectionRefusedError("No such player with nft")
     
     # TODO blockchain - transfer ownership of nft to player
     try:
         players_instance.update({"id": player_id, "staked": False})
     except Exception as e:
-        socketio.emit("unstake_nft", {"response": e})
+        socketio.emit("unstake_nft", {"response": e}, to=request.sid)
 
     
-    socketio.emit("unstake_nft", {"response": "OK"})
+    socketio.emit("unstake_nft", {"response": "OK"}, to=request.sid)
 
 @socketio.on("draw_combo")
 def draw_combo(data):
@@ -368,7 +369,7 @@ def draw_combo(data):
         games_instance.update({"id": game_id, f"{player_num}_combo": player_combo.upper()})
         player_combo = player_combo.upper()
     
-    socketio.emit('draw_combo', {"player_combo": [player_combo[:2], player_combo[2:]]})
+    socketio.emit('draw_combo', {"player_combo": [player_combo[:2], player_combo[2:]]}, to=request.sid)
     cur_game = games_instance.get_game([game_id])[0]
     
     print(cur_game[4], cur_game[5])
@@ -378,7 +379,7 @@ def draw_combo(data):
         results['player_id'] = player_id
         results['opponent_id'] = opp_id
         results['opponent_combo'] = [opp_combo[:2], opp_combo[2:]]
-        socketio.emit("play_game", {"results": results})
+        socketio.emit("play_game", {"results": results}, to=request.sid)
 
         results_copy = results.copy()
         results_copy['player_id'] = opp_id
@@ -494,7 +495,7 @@ def draw_the_flops(data: dict):
         
     the_flops = the_flops.upper().split(",")
         
-    socketio.emit("draw_the_flops", {"the_flops": the_flops})
+    socketio.emit("draw_the_flops", {"the_flops": the_flops}, to=request.sid)
     
 
 if __name__ == "__main__":
