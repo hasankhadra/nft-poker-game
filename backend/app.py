@@ -410,6 +410,9 @@ def play_game(data: dict):
             best_hand_name: str,    
             winner: bool
         },
+        player_id: int,
+        opponent_id: int,
+        opponent_combo: list,
         flops: list
         bad_beat: bool (True if the loser has a hand better than "AAAKK"),
         tie_with_hands: bool
@@ -463,6 +466,26 @@ def play_game(data: dict):
     if game_result["winner"] == -1:
         games_draws_instance.add_game([game_id, player1_combo, player2_combo, the_flops])
     else:
+        winner_id = game["player1_id"] if game_result["winner"] == 1 else game["player2_id"]
+        loser_id = game["player1_id"] if game_result["winner"] == 2 else game["player2_id"]
+        
+        winner_bounty = players_instance.get_player_by({"id": winner_id})[0]["bounty"]
+        loser_bounty = players_instance.get_player_by({"id": loser_id})[0]["bounty"]
+        
+        cur_round_num = rounds_instance.get_cur_round()["round_num"]
+        tournament_id = tournaments_instance.get_current_tournament_id()
+        
+        next_round_id = rounds_instance.get_round_id_by_round_num([tournament_id, cur_round_num + 1])
+        
+        if game_result["bad_beat"]:
+            players_instance.update({"id": winner_id, "bounty": winner_bounty + 0.5, 
+                                     "round_num": cur_round_num + 1, "round_id": next_round_id})
+            players_instance.update({"id": loser_id, "bounty": loser_bounty + 1.0})
+        else:
+            players_instance.update({"id": winner_id, "bounty": winner_bounty + 0.1,
+                                     "round_num": cur_round_num + 1, "round_id": next_round_id})
+        players_instance.update({"id": loser_id, "is_rail": True})
+    
         games_instance.update({"id": game_id, 
                                "winner_id": game["player1_id"] if game_result["winner"] == 1 else game["player2_id"]})
     
