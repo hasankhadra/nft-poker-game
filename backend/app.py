@@ -70,6 +70,8 @@ def add_round(data: dict):
     end_time = data["end_time"]
     public_address = data["public_address"]
     
+    if public_address != ADMIN_ADDRESS:
+        socketio.emit("add_round", {"response": "You have no access to add a round"}, to=request.sid)
     assert public_address == ADMIN_ADDRESS, "You have no access to add a round"
     
     # TODO check the public_address
@@ -86,6 +88,7 @@ def add_round(data: dict):
 @socketio.on('round_info')
 def round_info():
     cur_round = rounds_instance.get_cur_round()
+    print(cur_round)
     socketio.emit("round_info", {"start_time": cur_round["start_time"].strftime('%Y-%m-%d %H:%M:%S'), 
                                  "end_time": cur_round["end_time"].strftime('%Y-%m-%d %H:%M:%S'),
                                  "round_num": cur_round["round_num"]}, to=request.sid)
@@ -521,6 +524,5 @@ def draw_the_flops(data: dict):
         
     socketio.emit("draw_the_flops", {"the_flops": the_flops}, to=request.sid)
     
-
 if __name__ == "__main__":
     socketio.run(app, debug=True, host="0.0.0.0")
