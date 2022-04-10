@@ -125,7 +125,7 @@ class Games:
             json_data.append(dict(zip(row_headers, row)))
         return json_data
    
-    def get_games_from_round(self, game_info: list):
+    def get_games_from_round(self, game_info: list, get_json_format=None):
         """
         :param game_info: list containing [round_id]
         """
@@ -133,6 +133,10 @@ class Games:
         
         crsr.execute("SELECT * FROM games WHERE round_id = %s", game_info)
         retrieved = crsr.fetchall()
+        
+        if get_json_format:
+            retrieved = self._get_json_format(crsr, retrieved)
+        
         conn.commit()
         conn.close()
         return retrieved
