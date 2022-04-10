@@ -1,7 +1,7 @@
 
 import { useEffect, useState, useCallback, useContext } from "react";
-import { Helmet } from "react-helmet";
 import io from 'socket.io-client';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 
 import { getAddress } from '../utils/metamaskAuth';
 
@@ -102,19 +102,21 @@ function Lobby() {
     }
 
     return (
-        <div style={{
-            height: '90vh', width: "100vw", backgroundImage: `url(${backgroundImg})`,
-            backgroundSize: 'cover', backgroundRepeat: 'repeat', backgroundColor: "#1A1A1C",
-            display: "flex", flexDirection: "column", alignItems: "center",
-            justifyContent: "center", paddingTop: ".1rem"
-        }}>
-            <Helmet>
-                <title>Lobby</title>
-            </Helmet>
-            <ProfileInfo numNfts={nfts.length} numGames={getGamesNum()} totalBounties={getTotalBounties()} />
-            <NextRoundTimer roundNum={3} isActive />
-            <NftList nfts={nfts} paginate={paginate} />
-        </div>
+        <HelmetProvider>
+            <div style={{
+                height: '90vh', width: "100vw", backgroundImage: `url(${backgroundImg})`,
+                backgroundSize: 'cover', backgroundRepeat: 'repeat', backgroundColor: "#1A1A1C",
+                display: "flex", flexDirection: "column", alignItems: "center",
+                justifyContent: "center", paddingTop: ".1rem"
+            }}>
+                <Helmet>
+                    <title>Lobby</title>
+                </Helmet>
+                <ProfileInfo numNfts={nfts.length} numGames={getGamesNum()} totalBounties={getTotalBounties()} />
+                <NextRoundTimer roundNum={3} isActive />
+                <NftList nfts={nfts} paginate={paginate} />
+            </div>
+        </HelmetProvider>
     )
 }
 

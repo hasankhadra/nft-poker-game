@@ -89,7 +89,7 @@ def round_info():
     socketio.emit("round_info", {"start_time": cur_round["start_time"], 
                                  "end_time": cur_round["end_time"],
                                  "round_num": cur_round["round_num"]}, to=request.sid)
-    
+
 @socketio.on("register")
 def register(data: dict):
     """
@@ -500,4 +500,4 @@ def draw_the_flops(data: dict):
     
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True, host="0.0.0.0", ssl_context='adhoc')
+    socketio.run(app, debug=True, host="0.0.0.0")
