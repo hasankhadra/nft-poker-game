@@ -86,8 +86,8 @@ def add_round(data: dict):
 @socketio.on('round_info')
 def round_info():
     cur_round = rounds_instance.get_cur_round()
-    socketio.emit("round_info", {"start_time": cur_round["start_time"], 
-                                 "end_time": cur_round["end_time"],
+    socketio.emit("round_info", {"start_time": cur_round["start_time"].strftime('%Y-%m-%d %H:%M:%S'), 
+                                 "end_time": cur_round["end_time"].strftime('%Y-%m-%d %H:%M:%S'),
                                  "round_num": cur_round["round_num"]}, to=request.sid)
 
 @socketio.on("register")
