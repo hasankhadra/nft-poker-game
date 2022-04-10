@@ -61,6 +61,9 @@ function Game() {
 
 
     const joinRoomListener = (response) => {
+        console.log(response.player_id, " ", response.username, " ", response.opponent_id, " ", response.opponent_username);
+        if(myUsername !== "")
+            return;
         setPlayerId(response.player_id);
         setMyUsername(response.username);
 

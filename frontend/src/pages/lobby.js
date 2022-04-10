@@ -1,7 +1,7 @@
 
 import { useEffect, useState, useCallback, useContext } from "react";
-import { Helmet } from "react-helmet";
 import io from 'socket.io-client';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 
 import { getAddress } from '../utils/metamaskAuth';
 
