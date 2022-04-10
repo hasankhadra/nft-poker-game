@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import './nextRoundTimer.css'
 import pokerCardsImg from '../assets/profileInfoIcons/pokerCards.png'
 
+
+import { getOrder } from '../utils/numberStyling'
 import SingleTimeItem from "./singleTimeItem";
 
 
@@ -48,27 +50,19 @@ function NextRoundTimer(props) {
     }, [seconds, minutes, hours, days]);
 
     useEffect(() => {
-        setSeconds(props.seconds)
-        setMinutes(props.minutes)
-        setHours(props.hours)
-        setDays(props.days)
-    }, [props.seconds, props.minutes, props.hours, props.days])
+        const edited = props.startTime.replace(' ', 'T') + "Z";
+        const startDate = new Date(edited);
+        try {
+            const timeLeft = startDate - new Date();
+            setDays(timeLeft.getDays())
+            setHours(timeLeft.getHours())
+            setMinutes(timeLeft.getMinutes())
+            setSeconds(timeLeft.getSeconds())
+        }
+        catch(e){
 
-    const getOrder = (number) => {
-        if (number % 100 >= 11 && number % 100 <= 13) {
-            return 'th'
         }
-        if (number % 10 === 1) {
-            return 'st'
-        }
-        if (number % 10 === 2) {
-            return 'nd'
-        }
-        if (number % 10 === 3) {
-            return 'rd'
-        }
-        return 'th'
-    }
+    }, [props.startTime])
 
     if (!(seconds || minutes || hours || days) && props.isActive) {
         return (

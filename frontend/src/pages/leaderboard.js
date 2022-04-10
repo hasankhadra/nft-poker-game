@@ -15,6 +15,7 @@ function Leaderboard() {
     const socket = useContext(SocketContext);
     const [hasMetaMask, setHasMetaMask] = useState(false);
     const [players, setPlayers] = useState([]);
+    const [received, setReceived] = useState(false);
     const [paginate, setPaginate] = useState(10);
 
     useEffect(() => {
@@ -74,6 +75,7 @@ function Leaderboard() {
         response.players.map((player, index) => player.page = Math.ceil((index + 1) / paginate));
         response.players.map((player, index) => player.rank = index + 1);
         setPlayers(response.players);
+        setReceived(true)
     }, [players]);
 
     const getMyNFTs = async () => {
@@ -81,6 +83,10 @@ function Leaderboard() {
         let myNfts = players.filter(player => player.public_address === myAddress)
         myNfts.map((player, index) => player.page = Math.ceil((index + 1) / paginate));
         return myNfts
+    }
+
+    if (players.length === 0){
+        return ""
     }
 
     return (
@@ -101,7 +107,7 @@ function Leaderboard() {
                 justifyContent: "center",
                 marginLeft: "10%"
             }}>
-                <h4 style={{color: "white", margin: "1% 1%", height: "10%"}}>Game Leaderboard</h4>
+                <h4 style={{color: "white", margin: "0% 1%", height: "10%"}}>Game Leaderboard</h4>
                 <p style={{color: "white",  margin: "2% 1%", height: "10%"}}>
                 This leaderboard includes the <span className="yellow">1st Round</span> of the game that took place on <span className="yellow">July 21st, 2022</span>.
                  All the participants were given bounties according to the description in the <span className="yellow">Game Guide </span>

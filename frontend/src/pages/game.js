@@ -119,7 +119,7 @@ function Game() {
     // This should route to the next game.
     // This is done by emitting the event getNextGame.
     const handleNextGame = () => {
-
+        
     }
 
     return (

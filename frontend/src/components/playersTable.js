@@ -1,7 +1,7 @@
 
 import './playersTable.css'
 
-import { useEffect, useState, useCallback, useContext } from "react";
+import { useState, useMemo } from "react";
 
 
 import arrowLeft from '../assets/arrows/vector-l.png'
@@ -11,6 +11,10 @@ import arrowRight from '../assets/arrows/vector-r.png'
 function PlayersTable(props) {
 
     const [curPage, setCurPage] = useState(1);
+
+    const maxPage = useMemo(() => {
+        return Math.max(Math.ceil(props.players.length / props.paginate), 1);
+    }, [props.paginate, props.players]);
 
     return (
         <div style={{width: "100%", height: "75%"}}>
@@ -59,13 +63,13 @@ function PlayersTable(props) {
 
                 {<p style={{ background: "#4C4F58" }} onClick={() => { }}> {curPage}</p>}
 
-                {curPage >= Math.ceil(props.players.length / props.paginate) ? null : <p onClick={() => setCurPage(prev => Math.min(Math.ceil(props.players.length / props.paginate), prev + 1))}> {curPage + 1}</p>}
-                {curPage >= Math.ceil(props.players.length / props.paginate) - 1 ? null : <p onClick={() => setCurPage(prev => Math.min(Math.ceil(props.players.length / props.paginate), prev + 2))}> {curPage + 2}</p>}
+                {curPage >= maxPage ? null : <p onClick={() => setCurPage(prev => Math.min(maxPage, prev + 1))}> {curPage + 1}</p>}
+                {curPage >= maxPage - 1 ? null : <p onClick={() => setCurPage(prev => Math.min(maxPage, prev + 2))}> {curPage + 2}</p>}
 
-                {curPage >= Math.ceil(props.players.length / props.paginate) - 3 ? null : <p className='dots'>...</p>}
-                {curPage >= Math.ceil(props.players.length / props.paginate) - 2 ? null : <p onClick={() => setCurPage(Math.ceil(props.players.length / props.paginate))}>{Math.ceil(props.players.length / props.paginate)}</p>}
+                {curPage >= maxPage - 3 ? null : <p className='dots'>...</p>}
+                {curPage >= maxPage - 2 ? null : <p onClick={() => setCurPage(maxPage)}>{maxPage}</p>}
 
-                <p className='increment' onClick={() => setCurPage(prev => Math.min(Math.ceil(props.players.length / props.paginate), prev + 1))}><img src={arrowRight} alt="right-arrow" /></p>
+                <p className='increment' onClick={() => setCurPage(prev => Math.min(maxPage, prev + 1))}><img src={arrowRight} alt="right-arrow" /></p>
             </div>
         </div>
         
