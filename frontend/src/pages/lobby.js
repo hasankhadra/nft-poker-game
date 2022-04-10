@@ -80,7 +80,6 @@ function Lobby() {
     }
 
     const getNftsListener = useCallback(async (response) => {
-        console.log(response.nfts);
         response.nfts.sort(compareNfts);
         response.nfts.map((nft, index) => nft.page = Math.ceil((index + 1) / paginate));
         response.nfts.map((nft, index) => nft.rank = index + 1);
@@ -114,9 +113,21 @@ function Lobby() {
     const getIsActive = () => {
         return nfts.some(x => !x.is_rail)
     }
-    
-    const updateNfts = () => {
 
+    const updateNfts = (nftId, key, value) => {
+        let newNfts = nfts.map(nft => {
+            if (nft.nft_id === nftId){
+                return {
+                    ...nft,
+                    [key]: value
+                }
+            }
+            else 
+                return {
+                    ...nft
+                }
+        })
+        setNfts(newNfts)
     }
 
     // if (!receivedNfts || !receivedRound){
@@ -130,12 +141,14 @@ function Lobby() {
             display: "flex", flexDirection: "column", alignItems: "center",
             justifyContent: "center", paddingTop: ".1rem"
         }}>
-            <Helmet>
-                <title>Lobby</title>
-            </Helmet>
-            <ProfileInfo isActive={getIsActive()} numNfts={nfts.length} totalRounds={getGamesNum()} totalBounties={getTotalBounties()} />
-            <NextRoundTimer roundNum={roundInfo.roundNum} isActive startTime={roundInfo.startTime ?? ''} />
-            <NftList nfts={nfts} paginate={paginate} />
+            <HelmetProvider>
+                <Helmet>
+                    <title>Lobby</title>
+                </Helmet>
+                <ProfileInfo isActive={getIsActive()} numNfts={nfts.length} totalRounds={getGamesNum()} totalBounties={getTotalBounties()} />
+                <NextRoundTimer roundNum={roundInfo.roundNum} isActive startTime1={roundInfo.startTime ?? ''} startTime="2022-05-08 06:00:00" />
+                <NftList nfts={nfts} paginate={paginate} stakeNft={(nftId) => updateNfts(nftId, 'staked', 1)} unstakeNft={(nftId) => updateNfts(nftId, 'staked', 0)}/>
+            </HelmetProvider>
         </div>
     )
 }

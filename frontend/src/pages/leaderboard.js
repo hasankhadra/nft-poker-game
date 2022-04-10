@@ -71,7 +71,6 @@ function Leaderboard() {
 
     const getPlayersListener = useCallback(async (response) => {
         response.players.sort(comparePlayers);
-        console.log(response.players);
         response.players.map((player, index) => player.page = Math.ceil((index + 1) / paginate));
         response.players.map((player, index) => player.rank = index + 1);
         setPlayers(response.players);

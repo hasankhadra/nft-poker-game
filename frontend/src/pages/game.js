@@ -61,7 +61,6 @@ function Game() {
 
 
     const joinRoomListener = (response) => {
-        console.log(response.player_id, " ", response.username, " ", response.opponent_id, " ", response.opponent_username);
         if(myUsername !== "")
             return;
         setPlayerId(response.player_id);
@@ -76,7 +75,6 @@ function Game() {
     }
 
     const receiveGameResults = (response) => {
-        console.log("what")
         let results = response.results
         let myId = results.player_id
         let otherId = results.opponent_id
@@ -109,13 +107,11 @@ function Game() {
     // This should just emit the draw hand event.
     const handleDrawHand = async (e) => {
         e.preventDefault();
-        console.log("Draw hand " + playerId);
         const payload = {
             public_address: await getAddress(),
             game_id: gameId,
             player_id: playerId
         }
-        console.log(playerId)
         socket.emit("draw_combo", payload);
     }
 
