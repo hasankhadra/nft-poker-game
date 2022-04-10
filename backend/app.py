@@ -51,10 +51,19 @@ def schedule_round():
     games = get_round_matching(round_players)
     games_instance.add_round_games(round_id, games)
 
-# if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-#     pass
-#     # TODO set all the rounds
-#     scheduler.start()
+def get_player_id(public_address: str, game_id: int):
+    players = players_instance.get_player_by({"public_address": public_address}, get_json_format=True)
+    games = games_instance.get_games_by(by={"id": game_id}, get_json_format=True)
+    player_id = ""
+    
+    for game in games:
+        for player in players:
+            if player["id"] == game["player1_id"]:
+                player_id = player["id"]
+            if player["id"] == game["player2_id"]:
+                player_id = player["id"]
+
+    return player_id
 
 @socketio.on("add_round")
 def add_round(data: dict):
@@ -224,22 +233,25 @@ def get_next_room(data: dict):
     """
     :param data: dict
     {
-        player_id: int
+        game_id: int,
+        public_address: str
     }
     """
+    public_address = data["public_address"]
+    game_id = data["game_id"]
     
-    player_id = data["player_id"]
+    player_id = get_player_id(public_address, game_id)
     
     cur_round_id = rounds_instance.get_cur_round()["id"]
-    all_games = games_instance.get_games_from_round([cur_round_id])
-    
+    all_games = games_instance.get_games_from_round([cur_round_id], get_json_format=True)
+    print(all_games)
     player_rooms = [f"room_{game['id']}" for game in all_games if ((game["player1_id"] == player_id or game["player2_id"] == player_id) and (not game["winner_id"]))]
 
     if len(player_rooms):
         join(player_rooms[0])
         socketio.emit("get_next_room", {"room": player_rooms[0]}, to=request.sid)
     else:
-        socketio.emit("get_next_room", {"room": "ERROR"}, to=request.sid)
+        socketio.emit("get_next_room", {"room": "NO NEXT GAME"}, to=request.sid)
 
 @socketio.on("stake_nft")
 def stake_nft(data: dict):
@@ -342,8 +354,6 @@ def draw_combo(data):
     # get player nft tier
     nft_tier = players_instance.get_player_by({"id": player_id}, get_json_format=True)[0]["nft_tier"]
 
-    
-    
     # get opponent combo if any
     cur_game = games_instance.get_game([game_id])[0]
 
@@ -391,7 +401,6 @@ def draw_combo(data):
         results_copy['opponent_combo'] = [player_combo[:2], player_combo[2:]]
         
         socketio.emit("play_game", {"results": results_copy}, to="room_"+str(game_id), include_self=False)
-        # to="room_"+str(cur_game[0])
 
 def play_game(data: dict):  
     """
@@ -472,14 +481,14 @@ def play_game(data: dict):
         winner_id = game["player1_id"] if game_result["winner"] == 1 else game["player2_id"]
         loser_id = game["player1_id"] if game_result["winner"] == 2 else game["player2_id"]
         
-        winner_bounty = players_instance.get_player_by({"id": winner_id})[0]["bounty"]
-        loser_bounty = players_instance.get_player_by({"id": loser_id})[0]["bounty"]
+        winner_bounty = players_instance.get_player_by({"id": winner_id}, get_json_format=True)[0]["bounty"]
+        loser_bounty = players_instance.get_player_by({"id": loser_id}, get_json_format=True)[0]["bounty"]
         
         cur_round_num = rounds_instance.get_cur_round()["round_num"]
         tournament_id = tournaments_instance.get_current_tournament_id()
         
         next_round_id = rounds_instance.get_round_id_by_round_num([tournament_id, cur_round_num + 1])
-        
+        print(cur_round_num, next_round_id)        
         if game_result["bad_beat"]:
             players_instance.update({"id": winner_id, "bounty": winner_bounty + 0.5, 
                                      "round_num": cur_round_num + 1, "round_id": next_round_id})
