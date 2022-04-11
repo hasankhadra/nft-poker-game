@@ -133,7 +133,6 @@ function Game() {
     }
 
     const getNextRoomListener = (response) => {
-        console.log(response.room)
         setNextRoom(response.room);
     }
 

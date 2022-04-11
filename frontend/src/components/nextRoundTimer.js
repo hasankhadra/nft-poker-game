@@ -90,7 +90,7 @@ function NextRoundTimer(props) {
                     Please read the Game Guide for more information on how the game goes.
                 </p>
                 <div className="stake-start-buttons">
-                    <button className="stake-all-button" onClick={props.handleStakeAllNFTs}>
+                    <button className="stake-all-button" onClick={props.handleStakeAllNfts}>
                         Stake All NFT's
                     </button>
                     <button className="start-button" onClick={props.handleStartGame}>

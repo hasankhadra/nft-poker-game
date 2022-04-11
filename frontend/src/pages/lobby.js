@@ -14,23 +14,31 @@ import backgroundImg from '../assets/backgrounds/background.png';
 
 import NextRoundTimer from '../components/nextRoundTimer'
 
+import { useNavigate } from "react-router-dom";
 
 function Lobby() {
 
+    let navigate = useNavigate();
+    const [nextRoom, setNextRoom] = useState('');
     const socket = useContext(SocketContext);
     const [hasMetaMask, setHasMetaMask] = useState(false);
+
     const [nfts, setNfts] = useState([]);
-    const [paginate, setPaginate] = useState(10);
     const [roundInfo, setRoundInfo] = useState({})
+
     const [receivedNfts, setReceivedNfts] = useState(false);
     const [receivedRound, setReceivedRound] = useState(false);
+
+    const [paginate, setPaginate] = useState(10);
 
     useEffect(() => {
         socket.on('get_nfts_info', getNftsListener);
         socket.on('round_info', getCurrentRoundListener);
+        socket.on("get_next_room", getNextRoomListener);
         return () => {
             socket.off('get_nfts_info', getNftsListener);
             socket.off('round_info', getCurrentRoundListener);
+            socket.off("get_next_room", getNextRoomListener);
         }
     }, [socket]);
 
@@ -96,6 +104,15 @@ function Lobby() {
         setReceivedRound(true);
     }, [roundInfo, receivedRound]);
 
+    const getNextRoomListener = useCallback( async(response) => {
+        if (typeof response.room === Number){
+            navigate(`/game/${response.room}`);
+        }
+        else{
+            alert("No game found!")
+        }
+    }, [nextRoom]);
+
     const getGamesNum = () => {
         let total_games = 0;
         for (let i = 0; i < nfts.length; i++)
@@ -116,18 +133,36 @@ function Lobby() {
 
     const updateNfts = (nftId, key, value) => {
         let newNfts = nfts.map(nft => {
-            if (nft.nft_id === nftId){
+            if (nft.nft_id === nftId) {
                 return {
                     ...nft,
                     [key]: value
                 }
             }
-            else 
+            else
                 return {
                     ...nft
                 }
         })
         setNfts(newNfts)
+    }
+
+    const stakeAllNfts = () => {
+        let newNfts = nfts.map(nft => {
+            return {
+                ...nft,
+                staked: 1
+            }
+        })
+        setNfts(newNfts)
+    }
+
+    const handleStartGame = () => {
+        e.preventDefault();
+        socket.emit("get_next_room", 
+        {
+            public_address: await getAddress(),
+        });
     }
 
     // if (!receivedNfts || !receivedRound){
@@ -146,8 +181,9 @@ function Lobby() {
                     <title>Lobby</title>
                 </Helmet>
                 <ProfileInfo isActive={getIsActive()} numNfts={nfts.length} totalRounds={getGamesNum()} totalBounties={getTotalBounties()} />
-                <NextRoundTimer roundNum={roundInfo.roundNum} isActive startTime1={roundInfo.startTime ?? ''} startTime="2022-05-08 06:00:00" />
-                <NftList nfts={nfts} paginate={paginate} stakeNft={(nftId) => updateNfts(nftId, 'staked', 1)} unstakeNft={(nftId) => updateNfts(nftId, 'staked', 0)}/>
+                <NextRoundTimer roundNum={roundInfo.roundNum} isActive={getIsActive()}
+                    startTime1={roundInfo.startTime ?? ''} handleStakeAllNfts={stakeAllNfts} handleStartGame={handleStartGame} />
+                <NftList nfts={nfts} paginate={paginate} stakeNft={(nftId) => updateNfts(nftId, 'staked', 1)} unstakeNft={(nftId) => updateNfts(nftId, 'staked', 0)} />
             </HelmetProvider>
         </div>
     )
