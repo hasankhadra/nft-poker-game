@@ -109,7 +109,7 @@ function Game() {
 
         socket.emit("get_next_room", 
         {  
-            public_address: await getAddress()
+            public_address: await getAddress(),
         });
     }, []);
 

@@ -157,7 +157,7 @@ function Lobby() {
         setNfts(newNfts)
     }
 
-    const handleStartGame = () => {
+    const handleStartGame = async (e) => {
         e.preventDefault();
         socket.emit("get_next_room", 
         {

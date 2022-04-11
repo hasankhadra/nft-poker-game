@@ -1,6 +1,6 @@
 
 import { useEffect, useState, useCallback, useContext } from "react";
-import {Helmet} from "react-helmet";
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 
 import backgroundImg from '../assets/backgrounds/background.png';
 
@@ -51,7 +51,7 @@ function Leaderboard() {
         //     {id: 12, username: "user12", bounty: 5.1, round_num: 2},
         //     {id: 13, username: "user13", bounty: 10, round_num: 2},
         // ]
-        
+
         // newPlayers.sort(comparePlayers);
         // newPlayers.map((player, index) => player.page = Math.ceil((index + 1) / paginate));
         // newPlayers.map((player, index) => player.rank = index + 1);
@@ -59,7 +59,7 @@ function Leaderboard() {
         // return;
         // // TESTING FRONTEND
 
-        
+
         socket.emit("get_players");
     }, []);
 
@@ -84,37 +84,41 @@ function Leaderboard() {
         return myNfts
     }
 
-    if (players.length === 0){
-        return ""
-    }
+    // if (players.length === 0) {
+    //     return ""
+    // }
 
     return (
-        <div style={{ height: '90vh', width: "100vw", backgroundColor: "#1A1A1C", display: "flex", flexDirection: "column", alignContent: "center", 
-        justifyContent: "center", paddingTop: ".1rem"}}>
-            <Helmet>
-                <title>Leaderboard</title>
-            </Helmet>
+        <HelmetProvider>
             <div style={{
-                backgroundImage: `url(${backgroundImg})`,
-                height: "80%",
-                backgroundSize: 'cover',
-                backgroundRepeat: 'no-repeat',
-                width: "80%",
-                display: "flex",
-                flexDirection: "column",
-                alignContent: "center", 
-                justifyContent: "center",
-                marginLeft: "10%"
+                height: '90vh', width: "100vw", backgroundColor: "#1A1A1C", display: "flex", flexDirection: "column", alignContent: "center",
+                justifyContent: "center", paddingTop: ".1rem"
             }}>
-                <h4 style={{color: "white", margin: "0% 1%", height: "10%"}}>Game Leaderboard</h4>
-                <p style={{color: "white",  margin: "2% 1%", height: "10%"}}>
-                This leaderboard includes the <span className="yellow">1st Round</span> of the game that took place on <span className="yellow">July 21st, 2022</span>.
-                 All the participants were given bounties according to the description in the <span className="yellow">Game Guide </span>
-                 page. All players who participated are shown regardless of their win/lost status.
-                </p>
-                <PlayersTable players={players} paginate={paginate} />
+                <Helmet>
+                    <title>Leaderboard</title>
+                </Helmet>
+                <div style={{
+                    backgroundImage: `url(${backgroundImg})`,
+                    height: "80%",
+                    backgroundSize: 'cover',
+                    backgroundRepeat: 'no-repeat',
+                    width: "80%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignContent: "center",
+                    justifyContent: "center",
+                    marginLeft: "10%"
+                }}>
+                    <h4 style={{ color: "white", margin: "0% 1%", height: "10%" }}>Game Leaderboard</h4>
+                    <p style={{ color: "white", margin: "2% 1%", height: "10%" }}>
+                        This leaderboard includes the <span className="yellow">1st Round</span> of the game that took place on <span className="yellow">July 21st, 2022</span>.
+                        All the participants were given bounties according to the description in the <span className="yellow">Game Guide </span>
+                        page. All players who participated are shown regardless of their win/lost status.
+                    </p>
+                    <PlayersTable players={players} paginate={paginate} />
+                </div>
             </div>
-        </div>
+        </HelmetProvider>
     )
 }
 
