@@ -121,7 +121,7 @@ def register(data: dict):
         socketio.emit("register", {"response": """Nickname already exists!\nTry a different Nickname!"""}, to=request.sid)
         raise ConnectionRefusedError("Username already exists")
     
-    players_instance.add_player(["TODO_get_nft_id", data["public_address"], data["username"], tiers_distribution[num_players_instance.get_cur_count()]])
+    players_instance.add_player([f"nft_id{num_players_instance.get_cur_count()}", data["public_address"], data["username"], tiers_distribution[num_players_instance.get_cur_count()]])
     num_players_instance.increase_players_num()
     
     socketio.emit("register", {"response": "OK"}, to=request.sid)
