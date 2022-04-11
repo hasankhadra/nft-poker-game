@@ -99,7 +99,7 @@ class Rounds:
             
             if end_time < results[cur_round_index]["start_time"]: #datetime.strptime(results[cur_round_index]["start_time"], '%Y-%m-%d %H:%M:%S'):
                 cur_round_index = index
-            
+        
         return results[cur_round_index]
     
     def _get_json_format(self, crsr, results):

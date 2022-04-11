@@ -1,11 +1,11 @@
 
 import './nftList.css'
 
-import { useEffect, useState, useCallback, useContext, useMemo } from "react";
+import { useState, useMemo } from "react";
 
 import arrowLeft from '../assets/arrows/vector-l.png'
 import arrowRight from '../assets/arrows/vector-r.png'
-
+import { getOrder } from '../utils/numberStyling'
 
 function NftList(props) {
 
@@ -25,8 +25,9 @@ function NftList(props) {
                         <th className='body-large'>NFT</th>
                         <th className='body-large'>Username</th>
                         <th className='body-large'>Linked Tier</th>
-                        <th className='body-large'>Total Bounty (USDT)</th>
-                        <th className='body-large'>Round</th>
+                        <th className='body-large'>Current Round</th>
+                        <th className='body-large'>Bounty (USDT)</th>
+                        <th className='body-large'>Status</th>
                         <th className='body-large'>Stake</th>
                     </tr>
                     {
@@ -34,13 +35,35 @@ function NftList(props) {
                             if (curPage === element.page)
                                 return (
                                     <tr key={element.id}>
-                                        <td className='body-large'>{index}</td>
-                                        <td className='body-large'>{element.nft_id}</td>
+                                        <td className='body-large'>{index + 1}</td>
+                                        <td className='body-large'>
+                                            <img src={require(`../assets/nfts/nft${element.id % 2 + 1}.png`)} />
+                                        </td>
                                         <td className='body-large'>{element.username}</td>
-                                        <td className='body-large'>{ }</td>
+                                        <td className='body-large'>
+                                            <img src={require(`../assets/tiers/tier${element.id % 2 + 1}.png`)} />
+                                        </td>
+                                        <td className='body-large'>{element.round_num}{getOrder(element.round_num)} Round</td>
                                         <td className='body-large'>${element.bounty}</td>
-                                        <td className='body-large'>{element.round_num}</td>
-                                        <td className='body-large'>{element.staked ? "Staked" : "Unstaked"}</td>
+                                        <td className='body-large'>
+                                            {
+                                                element.is_rail
+                                                    ? <span style={{ color: '#EB3128' }}>Lost</span>
+                                                    : <span style={{ color: '#51CB20' }}>Active</span>
+                                            }
+
+                                        </td>
+                                        <td className='body-large'>
+                                            {
+                                                element.staked
+                                                    ? <button className="unstake-nft-btn" onClick={() => props.unstakeNft(element.nft_id)}>
+                                                        Unstake
+                                                    </button>
+                                                    : <button className="stake-nft-btn" onClick={() => props.stakeNft(element.nft_id)}>
+                                                        Stake
+                                                    </button>
+                                            }
+                                        </td>
                                     </tr>
                                 )
                             return "";

@@ -21,12 +21,16 @@ function Lobby() {
     const [hasMetaMask, setHasMetaMask] = useState(false);
     const [nfts, setNfts] = useState([]);
     const [paginate, setPaginate] = useState(10);
+    const [roundInfo, setRoundInfo] = useState({})
+    const [receivedNfts, setReceivedNfts] = useState(false);
+    const [receivedRound, setReceivedRound] = useState(false);
 
     useEffect(() => {
         socket.on('get_nfts_info', getNftsListener);
-
+        socket.on('round_info', getCurrentRoundListener);
         return () => {
             socket.off('get_nfts_info', getNftsListener);
+            socket.off('round_info', getCurrentRoundListener);
         }
     }, [socket]);
 
@@ -61,14 +65,12 @@ function Lobby() {
         // setNfts(newNfts);
         // return;
         // // TESTING FRONTEND
-
-
         let public_address = await getAddress()
-        console.log(public_address)
         const payload = {
             public_address: public_address
         }
         socket.emit("get_nfts_info", payload);
+        socket.emit("round_info");
     }, []);
 
     const compareNfts = (nft1, nft2) => {
@@ -78,18 +80,26 @@ function Lobby() {
     }
 
     const getNftsListener = useCallback(async (response) => {
-        console.log(response.nfts);
         response.nfts.sort(compareNfts);
         response.nfts.map((nft, index) => nft.page = Math.ceil((index + 1) / paginate));
         response.nfts.map((nft, index) => nft.rank = index + 1);
         setNfts(response.nfts);
-    }, [nfts]);
+        setReceivedNfts(true)
+    }, [nfts, receivedNfts]);
+
+    const getCurrentRoundListener = useCallback(async (response) => {
+        setRoundInfo({
+            startTime: response.start_time,
+            endTime: response.end_time,
+            roundNum: response.round_num
+        });
+        setReceivedRound(true);
+    }, [roundInfo, receivedRound]);
 
     const getGamesNum = () => {
         let total_games = 0;
         for (let i = 0; i < nfts.length; i++)
             total_games += nfts[i].round_num - 1;
-
         return total_games;
     }
 
@@ -97,26 +107,49 @@ function Lobby() {
         let total_bounties = 0.0;
         for (let i = 0; i < nfts.length; i++)
             total_bounties += nfts[i].bounty;
-
         return total_bounties;
     }
 
+    const getIsActive = () => {
+        return nfts.some(x => !x.is_rail)
+    }
+
+    const updateNfts = (nftId, key, value) => {
+        let newNfts = nfts.map(nft => {
+            if (nft.nft_id === nftId){
+                return {
+                    ...nft,
+                    [key]: value
+                }
+            }
+            else 
+                return {
+                    ...nft
+                }
+        })
+        setNfts(newNfts)
+    }
+
+    // if (!receivedNfts || !receivedRound){
+    //     return ""
+    // }
+
     return (
-        <HelmetProvider>
-            <div style={{
-                height: '90vh', width: "100vw", backgroundImage: `url(${backgroundImg})`,
-                backgroundSize: 'cover', backgroundRepeat: 'repeat', backgroundColor: "#1A1A1C",
-                display: "flex", flexDirection: "column", alignItems: "center",
-                justifyContent: "center", paddingTop: ".1rem"
-            }}>
+        <div style={{
+            height: '90vh', width: "100vw", backgroundImage: `url(${backgroundImg})`,
+            backgroundSize: 'cover', backgroundRepeat: 'repeat', backgroundColor: "#1A1A1C",
+            display: "flex", flexDirection: "column", alignItems: "center",
+            justifyContent: "center", paddingTop: ".1rem"
+        }}>
+            <HelmetProvider>
                 <Helmet>
                     <title>Lobby</title>
                 </Helmet>
-                <ProfileInfo numNfts={nfts.length} numGames={getGamesNum()} totalBounties={getTotalBounties()} />
-                <NextRoundTimer roundNum={3} isActive />
-                <NftList nfts={nfts} paginate={paginate} />
-            </div>
-        </HelmetProvider>
+                <ProfileInfo isActive={getIsActive()} numNfts={nfts.length} totalRounds={getGamesNum()} totalBounties={getTotalBounties()} />
+                <NextRoundTimer roundNum={roundInfo.roundNum} isActive startTime1={roundInfo.startTime ?? ''} startTime="2022-05-08 06:00:00" />
+                <NftList nfts={nfts} paginate={paginate} stakeNft={(nftId) => updateNfts(nftId, 'staked', 1)} unstakeNft={(nftId) => updateNfts(nftId, 'staked', 0)}/>
+            </HelmetProvider>
+        </div>
     )
 }
 

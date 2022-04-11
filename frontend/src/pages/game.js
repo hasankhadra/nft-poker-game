@@ -2,7 +2,7 @@
 import React from "react";
 import './game.css'
 import { useEffect, useState, useCallback, useContext, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { SocketContext } from '../contexts/socket';
 
 import PlayerCard from '../components/playerCard';
@@ -23,6 +23,7 @@ function Game() {
     let { gameId } = useParams();
 
     const socket = useContext(SocketContext);
+    let navigate = useNavigate();
 
     // Update when the game is over.
     const [winner, setWinner] = useState(-1);
@@ -48,20 +49,23 @@ function Game() {
     const [minutes, setMinutes] = useState(5);
     const [seconds, setSeconds] = useState(0);
 
+    const [nextRoom, setNextRoom] = useState('');
+
     useEffect(() => {
         socket.on('play_game', receiveGameResults);
         socket.on('draw_combo', drawComboListener);
-        socket.on('join_room', joinRoomListener)
+        socket.on('join_room', joinRoomListener);
+        socket.on("get_next_room", getNextRoomListener);
         return () => {
-            // socket.off('play_game', receiveGameResults);
+            socket.off('play_game', receiveGameResults);
             socket.off('draw_combo', drawComboListener);
             socket.off('join_room', joinRoomListener);
+            socket.off("get_next_room", getNextRoomListener);
         }
     }, [socket]);
 
 
     const joinRoomListener = (response) => {
-        console.log(response.player_id, " ", response.username, " ", response.opponent_id, " ", response.opponent_username);
         if(myUsername !== "")
             return;
         setPlayerId(response.player_id);
@@ -76,7 +80,6 @@ function Game() {
     }
 
     const receiveGameResults = (response) => {
-        console.log("what")
         let results = response.results
         let myId = results.player_id
         let otherId = results.opponent_id
@@ -103,26 +106,35 @@ function Game() {
             room: "room_" + gameId
         }
         socket.emit("join_room", payload);
-        // socket.emit("draw_combo", {public_address: await getAddress(), game_id: gameId})
+
+        socket.emit("get_next_room", 
+        {  
+            public_address: await getAddress(),
+            game_id: gameId
+        });
     }, []);
 
     // This should just emit the draw hand event.
     const handleDrawHand = async (e) => {
         e.preventDefault();
-        console.log("Draw hand " + playerId);
         const payload = {
             public_address: await getAddress(),
             game_id: gameId,
             player_id: playerId
         }
-        console.log(playerId)
         socket.emit("draw_combo", payload);
     }
 
     // This should route to the next game.
     // This is done by emitting the event getNextGame.
-    const handleNextGame = () => {
+    const handleNextGame = async (e) => {
+        e.preventDefault();
+        navigate(`/game/${nextRoom}`);
+    }
 
+    const getNextRoomListener = (response) => {
+        console.log(response.room)
+        setNextRoom(response.room);
     }
 
     return (
@@ -142,13 +154,13 @@ function Game() {
                     <button className="draw-hand" onClick={handleDrawHand}>
                         Draw Hand
                     </button>
-                    {winner === -1 ?
-                        <button className="next-game" disabled onClick={handleNextGame}>
+                    {(winner === -1 || nextRoom === "NO NEXT GAME") ?
+                        (<button className="next-game" disabled onClick={handleNextGame}>
                             Next Game &#8594;
-                        </button> :
-                        <button className="next-game" onClick={handleNextGame}>
+                        </button>) :
+                        (<button className="next-game" onClick={handleNextGame}>
                             Next Game &#8594;
-                        </button>
+                        </button>)
                     }
                 </div>
             </div>

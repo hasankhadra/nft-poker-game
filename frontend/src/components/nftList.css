@@ -13,7 +13,7 @@
     padding: 0px 0.6rem;
 }
 
-.nfts-table>table{
+.nfts-table>table {
     padding: 0px;
 }
 
@@ -89,4 +89,29 @@ td {
 .pagination>p:not(.dots, .all-pages):hover {
     background: #363942;
     cursor: pointer;
+}
+
+.stake-nft-btn {
+    font-size: 1rem;
+    color: #25262A;
+    background: #FFC728;
+    border-radius: 8px;
+    width: 8rem;
+    height: 3rem;
+    font-family: 'Josefin Sans';
+}
+
+.unstake-nft-btn {
+    font-size: 1rem;
+    color: #FFC728;
+    border-radius: 8px;
+    border-color: #FFC728;
+    width: 8rem;
+    height: 3rem;
+    background: None;
+}
+
+td>img{
+    width: 3.3rem;
+    height: 3.3rem;
 }

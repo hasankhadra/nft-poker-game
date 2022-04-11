@@ -20,5 +20,7 @@
     background: #4C4F58;
     width: fit-content;
     padding: 2rem;
+    width: 10rem;
+    height: 6rem;
     text-align: center;
 }

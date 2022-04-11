@@ -41,7 +41,6 @@ function Register() {
     });
 
     const registerListener = useCallback((registerResponse) => {
-        console.log()
         if (registerResponse.response === 'OK') {
             alert("You've successfully registered!");
             setRegistered(true);
