@@ -245,7 +245,7 @@ def get_next_room(data: dict):
     players = players_instance.get_player_by({"public_address": public_address})
     player_ids = [player["id"] for player in players]
     
-    player_rooms = [f"room_{game['id']}" for game in all_games if ((game["player1_id"] in player_ids or game["player2_id"] in player_ids) and (not game["winner_id"]))]
+    player_rooms = [game[id] for game in all_games if ((game["player1_id"] in player_ids or game["player2_id"] in player_ids) and (not game["winner_id"]))]
 
     if len(player_rooms):
         join(player_rooms[0])
@@ -400,7 +400,7 @@ def draw_combo(data):
         results_copy['opponent_id'] = player_id
         results_copy['opponent_combo'] = [player_combo[:2], player_combo[2:]]
         
-        socketio.emit("play_game", {"results": results_copy}, to="room_"+str(game_id), include_self=False)
+        socketio.emit("play_game", {"results": results_copy}, to=str(game_id), include_self=False)
 
 def play_game(data: dict):  
     """
