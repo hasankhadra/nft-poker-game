@@ -105,8 +105,8 @@ function Lobby() {
     }, [roundInfo, receivedRound]);
 
     const getNextRoomListener = useCallback( async(response) => {
-        console.log(response.room)
-        if (typeof response.room === Number){
+        console.log(typeof(response.room))
+        if (response.room !== "NO NEXT GAME"){
             navigate(`/game/${response.room}`);
         }
         else{
