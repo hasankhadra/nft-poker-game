@@ -242,7 +242,7 @@ def get_next_room(data: dict):
     cur_round_id = rounds_instance.get_cur_round()["id"]
     all_games = games_instance.get_games_from_round([cur_round_id], get_json_format=True)
     
-    players = players_instance.get_player_by({"public_address": public_address})
+    players = players_instance.get_player_by({"public_address": public_address}, get_json_format=True)
     player_ids = [player["id"] for player in players]
     
     player_rooms = [game[id] for game in all_games if ((game["player1_id"] in player_ids or game["player2_id"] in player_ids) and (not game["winner_id"]))]

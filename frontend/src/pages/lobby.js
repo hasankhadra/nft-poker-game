@@ -105,13 +105,14 @@ function Lobby() {
     }, [roundInfo, receivedRound]);
 
     const getNextRoomListener = useCallback( async(response) => {
+        console.log(response.room)
         if (typeof response.room === Number){
             navigate(`/game/${response.room}`);
         }
         else{
             alert("No game found!")
         }
-    }, [nextRoom]);
+    }, [nextRoom, navigate]);
 
     const getGamesNum = () => {
         let total_games = 0;
