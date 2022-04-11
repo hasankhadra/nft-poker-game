@@ -233,19 +233,19 @@ def get_next_room(data: dict):
     """
     :param data: dict
     {
-        game_id: int,
         public_address: str
     }
     """
     public_address = data["public_address"]
-    game_id = data["game_id"]
     
-    player_id = get_player_id(public_address, game_id)
     
     cur_round_id = rounds_instance.get_cur_round()["id"]
     all_games = games_instance.get_games_from_round([cur_round_id], get_json_format=True)
-    print(all_games)
-    player_rooms = [f"room_{game['id']}" for game in all_games if ((game["player1_id"] == player_id or game["player2_id"] == player_id) and (not game["winner_id"]))]
+    
+    players = players_instance.get_player_by({"public_address": public_address})
+    player_ids = [player["id"] for player in players]
+    
+    player_rooms = [f"room_{game['id']}" for game in all_games if ((game["player1_id"] in player_ids or game["player2_id"] in player_ids) and (not game["winner_id"]))]
 
     if len(player_rooms):
         join(player_rooms[0])
