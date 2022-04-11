@@ -245,10 +245,10 @@ def get_next_room(data: dict):
     players = players_instance.get_player_by({"public_address": public_address}, get_json_format=True)
     player_ids = [player["id"] for player in players]
     
-    player_rooms = [game[id] for game in all_games if ((game["player1_id"] in player_ids or game["player2_id"] in player_ids) and (not game["winner_id"]))]
+    player_rooms = [game["id"] for game in all_games if ((game["player1_id"] in player_ids or game["player2_id"] in player_ids) and (not game["winner_id"]))]
 
     if len(player_rooms):
-        join(player_rooms[0])
+        join(str(player_rooms[0]))
         socketio.emit("get_next_room", {"room": player_rooms[0]}, to=request.sid)
     else:
         socketio.emit("get_next_room", {"room": "NO NEXT GAME"}, to=request.sid)
