@@ -8,13 +8,26 @@
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
     color: white;
-    padding: .3rem;
+    width: 3rem;
+    height: 2rem;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .lower-type-box {
     background: #FFC728;
     color: black;
-    padding: .3rem;
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
+    width: 3rem;
+    height: 1.2rem;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: .9rem;
+    font-family: 'Josefin Sans';
+    color: #25262A;
 }

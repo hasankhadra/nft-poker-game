@@ -55,7 +55,7 @@ function NftList(props) {
                                         </td>
                                         <td className='body-large'>
                                             {
-                                                !element.staked
+                                                element.staked
                                                     ? <button className="unstake-nft-btn" onClick={() => props.unstakeNft(element.nft_id)}>
                                                         Unstake
                                                     </button>

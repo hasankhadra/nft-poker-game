@@ -14,6 +14,7 @@ function NextRoundTimer(props) {
     const [hours, setHours] = useState(props.hours ?? 0);
     const [minutes, setMinutes] = useState(props.minutes ?? 0);
     const [seconds, setSeconds] = useState(props.seconds ?? 0);
+    const [dateString, setDateString] = useState('')
 
     useEffect(() => {
         let myInterval = setInterval(() => {
@@ -50,16 +51,27 @@ function NextRoundTimer(props) {
     }, [seconds, minutes, hours, days]);
 
     useEffect(() => {
-        const edited = props.startTime.replace(' ', 'T') + "Z";
-        const startDate = new Date(edited);
         try {
-            const timeLeft = startDate - new Date();
-            setDays(timeLeft.getDays())
-            setHours(timeLeft.getHours())
-            setMinutes(timeLeft.getMinutes())
-            setSeconds(timeLeft.getSeconds())
+            const edited = props.startTime.replace(' ', 'T') + "Z";
+            const startDate = new Date(edited);
+            setDateString(startDate.toDateString())
+            const millisecondsLeft = startDate - new Date()
+            let secondsLeft = millisecondsLeft / 1000;
+
+            const newDays = Math.floor(secondsLeft / (24 * 3600))
+            secondsLeft -= newDays * 24 * 3600;
+            const newHours = Math.floor(secondsLeft / 3600)
+            secondsLeft -= newHours * 3600;
+
+            const newMinutes = Math.floor(secondsLeft / 60)
+            secondsLeft -= newMinutes * 60;
+
+            setDays(newDays)
+            setHours(newHours)
+            setMinutes(newMinutes)
+            setSeconds(Math.floor(secondsLeft))
         }
-        catch(e){
+        catch (e) {
 
         }
     }, [props.startTime])
@@ -70,7 +82,7 @@ function NextRoundTimer(props) {
                 <div className="next-round-header">
                     <img src={pokerCardsImg} />
                     <p>
-                        <span className="yellow bigger">{props.roundNum}{getOrder(props.roundNum)}</span> is already taking place. <span className="yellow">Join</span> the game now!
+                        <span className="yellow bigger">{props.roundNum}{getOrder(props.roundNum)} Round</span> is already taking place. <span className="yellow">Join</span> the game now!
                     </p>
                 </div>
                 <p>
@@ -90,10 +102,12 @@ function NextRoundTimer(props) {
     }
     else if (!(seconds || minutes || hours || days)) {
         return (
-            <div className="next-game-timer">
-                <div className="next-game-header">
+            <div className="next-round-timer">
+                <div className="next-round-header">
                     <img src={pokerCardsImg} />
-                    <span className="yellow">{props.roundNum}{getOrder(props.roundNum)}</span> is already taking place. Unfortunately, all your NFT's lost the game.
+                    <p>
+                        <span className="yellow bigger">{props.roundNum}{getOrder(props.roundNum)} Round</span> is already taking place. Unfortunately, all your NFT's lost the game.
+                    </p>
                 </div>
                 <p>
                     Before you start a round, you need to Stake some of your NFTs or all of them to be able to play.
@@ -103,14 +117,18 @@ function NextRoundTimer(props) {
         )
     }
     return (
-        <div className="next-game-timer">
-            <div className="next-game-header">
+        <div className="next-round-timer">
+            <div className="next-round-header">
                 <img src={pokerCardsImg} />
-                <span className="yellow">{props.roundNum}{getOrder(props.roundNum)}</span> will take place on <span className="yellow">{props.startTimeString}</span>
-                <SingleTimeItem type="Days" number={days} />
-                <SingleTimeItem type="Hours" number={hours} />
-                <SingleTimeItem type="Mins" number={minutes} />
-                <SingleTimeItem type="Secs" number={seconds} />
+                <p>
+                    <span className="yellow bigger">{props.roundNum}{getOrder(props.roundNum)} Round</span> will take place on <span className="yellow">{dateString}</span>.
+                </p>
+                <div className="countdown-timer">
+                    <SingleTimeItem type="Days" number={days} />
+                    <SingleTimeItem type="Hours" number={hours} />
+                    <SingleTimeItem type="Mins" number={minutes} />
+                    <SingleTimeItem type="Secs" number={seconds} />
+                </div>
             </div>
         </div>
     )
