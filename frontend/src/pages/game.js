@@ -103,7 +103,7 @@ function Game() {
         const payload = {
             public_address: await getAddress(),
             game_id: gameId,
-            room: "room_" + gameId
+            room: gameId.toString()
         }
         socket.emit("join_room", payload);
 
