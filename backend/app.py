@@ -401,7 +401,7 @@ def draw_combo(data):
         results_copy['opponent_id'] = player_id
         results_copy['opponent_combo'] = [player_combo[:2], player_combo[2:]]
         print(request.sid, str(game_id))
-        socketio.emit("play_game", {"results": results_copy}, include_self=False)
+        socketio.emit("play_game", {"results": results_copy}, to=str(game_id) ,include_self=False)
 
 def play_game(data: dict):  
     """
